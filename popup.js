@@ -14,6 +14,20 @@ async function executeInTab(func, ...args) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsBtn = document.createElement('div');
+    settingsBtn.innerHTML = '⚙️';
+    settingsBtn.style.position = 'absolute';
+    settingsBtn.style.top = '10px';
+    settingsBtn.style.right = '10px';
+    settingsBtn.style.cursor = 'pointer';
+    settingsBtn.title = 'Settings';
+    settingsBtn.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage();
+    });
+    document.body.appendChild(settingsBtn);
+});
+
 // Show notification in the extension
 function showNotification(message) {
     chrome.notifications.create({
@@ -195,15 +209,13 @@ async function updateDesignModeState() {
 }
 
 
-//For quote
 document.addEventListener("DOMContentLoaded", () => {
     getQuote()
-        .then(quote => {
-            document.getElementById("quote").innerText = `${quote}`;
-        })
-        .catch(error => {
-            console.error("Error fetching quote:", error);
-            // Fallback quote in case of error
-            document.getElementById("quote").innerText = `"Make it work, make it right, make it fast"`;
-        });
+       .then(quote => {
+           document.getElementById("quote").innerText = `${quote}`;
+       })
+       .catch(error => {
+           console.error("Error fetching quote:", error);
+           document.getElementById("quote").innerText = `"Make it work, make it right, make it fast"`;
+       });
 });
