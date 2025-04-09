@@ -126,9 +126,17 @@ Contributions welcome! Please:
 
 ---
 
-**License**  
-All rights reserved - Not currently open source licensed
+## License  
+Copyright © 2025 vr-malaadin | mahdialaaaldin (Mahdi). All rights reserved.
 
-**Contact**  
-[mahdialaaaldin+codesavvy@gmail.com](mailto:mahdialaaaldin+codesavvy@gmail.com)
-```
+This project, including all source code, designs, and functionality, is the intellectual property of the author. You may not use, copy, modify, distribute, or reproduce any part of this project without explicit written permission.
+
+Use of this software or its components for commercial, educational, or personal purposes is not permitted without prior authorization.
+
+## Third-Party Assets  
+Some icons or visual elements used in this project are sourced from FormWeb, particularly from the Flaticon website.
+
+Unauthorized use or duplication may result in legal action.
+
+## Contact  
+For inquiries or feedback, contact me via email: **[mahdialaaaldin+codesavvy@gmail.com](mailto:mahdialaaaldin+codesavvy@gmail.com)**
