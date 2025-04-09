@@ -13,8 +13,15 @@ async function executeInTab(func, ...args) {
         showNotification(`Error: ${error.message}`);
     }
 }
+async function checkVanriseMode() {
+    return new Promise(resolve => {
+        chrome.storage.local.get(['vanriseMode'], (result) => {
+            resolve(result.vanriseMode || false);
+        });
+    });
+}
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const settingsBtn = document.createElement('div');
     settingsBtn.innerHTML = '⚙️';
     settingsBtn.style.position = 'absolute';
@@ -25,7 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsBtn.addEventListener('click', () => {
         chrome.runtime.openOptionsPage();
     });
+
     document.body.appendChild(settingsBtn);
+    // Handle Vanrise Mode visibility
+    const vanriseModeEnabled = await checkVanriseMode();
+    const disableLoaderButton = document.getElementById('disableLoader');
+    disableLoaderButton.style.display = vanriseModeEnabled ? 'flex' : 'none';
+
+    // Update when settings change
+    chrome.storage.onChanged.addListener((changes) => {
+        if (changes.vanriseMode) {
+            disableLoaderButton.style.display = changes.vanriseMode.newValue ? 'flex' : 'none';
+        }
+    });
 });
 
 // Show notification in the extension
