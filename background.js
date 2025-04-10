@@ -1,4 +1,5 @@
-﻿chrome.contextMenus.create({
+﻿importScripts('coreFunctions.js');
+chrome.contextMenus.create({
     id: "textActions",
     title: "Text Actions",
     contexts: ["selection"],
@@ -93,6 +94,7 @@ async function improveTextWithAI(apiKey) {
         const improvedText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
         if (!improvedText) throw new Error("No improved text received");
+        console.log(improvedText);
 
         activeEl.setRangeText(improvedText, start, end, "end");
         return;
@@ -132,6 +134,7 @@ async function improveTextWithAI(apiKey) {
     const improvedText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
     if (!improvedText) throw new Error("No improved text received");
+    console.log(improvedText);
 
     const improvedNode = document.createTextNode(improvedText);
     range.deleteContents();
@@ -245,3 +248,34 @@ function convertCase(caseType) {
     }
     parent.removeChild(tempDiv);
 }
+
+chrome.commands.onCommand.addListener(async (command) => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+    switch (command) {
+        case 'unlock-elements':
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: CoreTools.unlockElements
+            });
+            break;
+
+        case 'toggle-design-mode':
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: CoreTools.toggleDesignMode
+            });
+            break;
+
+        case 'disable-loader':
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: CoreTools.disableLoaders
+            });
+            break;
+        case 'clear-cache':
+            await chrome.browsingData.remove({ since: 0 }, { cache: true });
+            chrome.tabs.reload(tab.id);
+            break;
+    }
+});

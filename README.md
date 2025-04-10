@@ -77,6 +77,23 @@ git clone https://github.com/vr-malaadin/CodeSavvy.git
 3. Click Save - key stored locally in browser storage
 
 ---
+### ⌨️ Keyboard Shortcuts (Customizable)
+Quick-access shortcuts for power users (can be modified in Chrome settings):
+
+| Default Shortcut  | Action                     |
+|-------------------|----------------------------|
+| `Ctrl+Shift+E`    | Unlock elements            |
+| `Ctrl+Shift+Y`    | Toggle Edit Mode           |
+| `Ctrl+Shift+L`    | Disable Vanrise loaders    |
+| `Ctrl+Shift+R`    | Clear cache & reload       |
+
+**To customize shortcuts:**
+1. Go to `chrome://extensions/shortcuts`  (works in both Chrome & Edge)  
+2. Find "CodeSavvy Pro" in the list  
+3. Click the shortcut field and enter your preferred key combo  
+4. Shortcuts update instantly (no restart needed)
+
+---
 
 ## **File Structure**
 
@@ -115,6 +132,7 @@ Required Chrome permissions:
 - API key stored locally using chrome.storage.local
 - Fallback quote used when API unavailable: "Make it work, make it right, make it fast."
 - Dark/light mode support based on system preference
+- Core functionality centralized in `coreFunctions.js` for maintainability
 
 ---
 

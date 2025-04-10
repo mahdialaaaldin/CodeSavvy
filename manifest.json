@@ -32,7 +32,37 @@
     "service_worker": "background.js"
   },
   "options_ui": {
-      "page": "options.html",
-      "open_in_tab": false
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "commands": {
+    "unlock-elements": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E",
+        "mac": "Command+Shift+E"
+      },
+      "description": "Unlock Elements"
+    },
+    "toggle-design-mode": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Toggle Edit Mode"
+    },
+    "disable-loader": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Disable Loader"
+    },
+    "clear-cache": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+R",
+        "mac": "Command+Shift+R"
+      },
+      "description": "Clear Cache"
+    }
   }
 }

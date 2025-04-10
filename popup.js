@@ -13,6 +13,7 @@ async function executeInTab(func, ...args) {
         showNotification(`Error: ${error.message}`);
     }
 }
+
 async function checkVanriseMode() {
     return new Promise(resolve => {
         chrome.storage.local.get(['vanriseMode'], (result) => {
@@ -20,32 +21,6 @@ async function checkVanriseMode() {
         });
     });
 }
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const settingsBtn = document.createElement('div');
-    settingsBtn.innerHTML = '⚙️';
-    settingsBtn.style.position = 'absolute';
-    settingsBtn.style.top = '10px';
-    settingsBtn.style.right = '10px';
-    settingsBtn.style.cursor = 'pointer';
-    settingsBtn.title = 'Settings';
-    settingsBtn.addEventListener('click', () => {
-        chrome.runtime.openOptionsPage();
-    });
-
-    document.body.appendChild(settingsBtn);
-    // Handle Vanrise Mode visibility
-    const vanriseModeEnabled = await checkVanriseMode();
-    const disableLoaderButton = document.getElementById('disableLoader');
-    disableLoaderButton.style.display = vanriseModeEnabled ? 'flex' : 'none';
-
-    // Update when settings change
-    chrome.storage.onChanged.addListener((changes) => {
-        if (changes.vanriseMode) {
-            disableLoaderButton.style.display = changes.vanriseMode.newValue ? 'flex' : 'none';
-        }
-    });
-});
 
 // Show notification in the extension
 function showNotification(message) {
@@ -57,45 +32,56 @@ function showNotification(message) {
     });
 }
 
-// Core functionality
 document.addEventListener('DOMContentLoaded', async () => {
+    // Add settings gear icon
+    const settingsBtn = document.createElement('div');
+    settingsBtn.innerHTML = '⚙️';
+    settingsBtn.style.position = 'absolute';
+    settingsBtn.style.top = '10px';
+    settingsBtn.style.right = '10px';
+    settingsBtn.style.cursor = 'pointer';
+    settingsBtn.title = 'Settings';
+    settingsBtn.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage();
+    });
+    document.body.appendChild(settingsBtn);
+
+    // Handle Vanrise Mode visibility
+    const vanriseModeEnabled = await checkVanriseMode();
+    const disableLoaderButton = document.getElementById('disableLoader');
+    disableLoaderButton.style.display = vanriseModeEnabled ? 'flex' : 'none';
+
+    // Update when settings change
+    chrome.storage.onChanged.addListener((changes) => {
+        if (changes.vanriseMode) {
+            disableLoaderButton.style.display = changes.vanriseMode.newValue ? 'flex' : 'none';
+        }
+    });
+
     // Initialize design mode button state
     const isDesignModeOn = await executeInTab(() => document.designMode === 'on');
     document.getElementById('designModeToggle').classList.toggle('active', isDesignModeOn);
 
-    // Button handlers
+    // Core functionality handlers
     document.getElementById('unlockElements').addEventListener('click', async () => {
-        await executeInTab(() => {
-            document.querySelectorAll('[disabled], .divDisabled, [aria-disabled="true"], [readonly], .disabled').forEach(el => {
-                el.removeAttribute('disabled');
-                el.removeAttribute('aria-disabled');
-                el.removeAttribute('readonly');
-                el.classList.remove('divDisabled', 'disabled');
-            });
-        });
-        //showNotification('Elements unlocked');
+        await executeInTab(CoreTools.unlockElements);
     });
 
     document.getElementById('unlimitedMaxLengthButton').addEventListener('click', async () => {
         await executeInTab(() => {
             document.querySelectorAll('[maxlength]').forEach(el => el.removeAttribute('maxlength'));
         });
-        //showNotification('Input limits removed');
     });
 
     document.getElementById('designModeToggle').addEventListener('click', async () => {
-        const currentActive = document.getElementById('designModeToggle').classList.contains('active');
-        const newState = await executeInTab((shouldEnable) => {
-            document.designMode = shouldEnable ? 'on' : 'off';
-            return document.designMode === 'on';
-        }, !currentActive);
-
-        // Update visual state
+        const newState = await executeInTab(CoreTools.toggleDesignMode);
         const toggleBtn = document.getElementById('designModeToggle');
         toggleBtn.classList.toggle('active', newState);
         toggleBtn.title = `Design mode ${newState ? 'ON' : 'OFF'}`;
+    });
 
-        //showNotification(`Design mode ${newState ? 'enabled' : 'disabled'}`);
+    document.getElementById('disableLoader').addEventListener('click', async () => {
+        await executeInTab(CoreTools.disableLoaders);
     });
 
     // Font changer modal
@@ -106,15 +92,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('applyFont').addEventListener('click', () => {
         const fontSelector = document.getElementById('fontSelector');
         const selectedFont = fontSelector.value;
-
-        // List of system fonts that don't require import
         const systemFonts = [
             "Comic Sans MS", "Tahoma", "Trebuchet MS", "Lucida Sans Unicode",
             "Lucida Grande", "Palatino", "Impact", "Wingdings", "Arial Black",
             "Consolas", "Segoe UI", "Helvetica", "Helvetica Neue", "Times"
         ];
 
-        // URLs for the Google Fonts
         const googleFontsUrl = {
             'Poppins': "https://fonts.googleapis.com/css2?family=Poppins&display=swap",
             'Lexend Deca': "https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap",
@@ -134,9 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'Ubuntu': "https://fonts.googleapis.com/css2?family=Ubuntu&display=swap"
         };
 
-        // Check if the selected font is a system font (i.e., no need to import)
         if (systemFonts.includes(selectedFont)) {
-            // No need to load any Google Font, just apply the system font directly
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 chrome.scripting.executeScript({
                     target: { tabId: tabs[0].id },
@@ -170,33 +151,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     },
                     args: [selectedFont, googleFontsUrl[selectedFont]]
                 });
+                fontModal.style.display = 'none';
             });
         }
-
-        document.getElementById('fontModal').style.display = 'none';
     });
-
-    document.getElementById('disableLoader').addEventListener('click', () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            let activeTabId = tabs[0].id;
-            chrome.scripting.executeScript({
-                target: { tabId: activeTabId },
-                func: () => {
-                    document.querySelectorAll('.divLoading').forEach(el => {
-                        el.classList.remove('divLoading');
-                    });
-                }
-            });
-        });
-    });
-
-    // Other button handlers (simplified)
+    // Utility handlers
     const buttonActions = {
-        clearCacheButton: async () => {
-            await chrome.browsingData.remove({ since: 0 }, { cache: true });
-            chrome.tabs.reload((await chrome.tabs.query({ active: true, currentWindow: true }))[0].id);
-            showNotification('Cache cleared');
-        },
+        clearCacheButton: () => executeInTab(CoreTools.clearCache),
         screenshotButton: async () => {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             const dataUrl = await chrome.tabs.captureVisibleTab();
@@ -214,6 +175,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     Object.entries(buttonActions).forEach(([id, action]) => {
         document.getElementById(id)?.addEventListener('click', action);
     });
+
+    // Handle quote display
+    getQuote()
+        .then(quote => {
+            document.getElementById("quote").innerText = `${quote}`;
+        })
+        .catch(error => {
+            console.error("Error fetching quote:", error);
+            document.getElementById("quote").innerText = `"Make it work, make it right, make it fast"`;
+        });
 });
 
 // Handle tab updates
@@ -226,15 +197,3 @@ async function updateDesignModeState() {
     const isDesignModeOn = await executeInTab(() => document.designMode === 'on');
     document.getElementById('designModeToggle')?.classList.toggle('active', isDesignModeOn);
 }
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    getQuote()
-       .then(quote => {
-           document.getElementById("quote").innerText = `${quote}`;
-       })
-       .catch(error => {
-           console.error("Error fetching quote:", error);
-           document.getElementById("quote").innerText = `"Make it work, make it right, make it fast"`;
-       });
-});
