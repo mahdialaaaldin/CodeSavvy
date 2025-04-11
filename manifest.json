@@ -50,12 +50,12 @@
       },
       "description": "Toggle Edit Mode"
     },
-    "disable-loader": {
+    "improve-text": {
       "suggested_key": {
         "default": "Ctrl+Shift+L",
         "mac": "Command+Shift+L"
       },
-      "description": "Disable Loader"
+      "description": "Improve selected text"
     },
     "clear-cache": {
       "suggested_key": {

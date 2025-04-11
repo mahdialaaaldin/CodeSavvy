@@ -80,12 +80,12 @@ git clone https://github.com/vr-malaadin/CodeSavvy.git
 ### ⌨️ Keyboard Shortcuts (Customizable)
 Quick-access shortcuts for power users (can be modified in Chrome settings):
 
-| Default Shortcut  | Action                     |
-|-------------------|----------------------------|
-| `Ctrl+Shift+E`    | Unlock elements            |
-| `Ctrl+Shift+Y`    | Toggle Edit Mode           |
-| `Ctrl+Shift+L`    | Disable Vanrise loaders    |
-| `Ctrl+Shift+R`    | Clear cache & reload       |
+| Shortcut          | Action                          |
+|-------------------|---------------------------------|
+| `Ctrl+Shift+E`    | Unlock elements                 |
+| `Ctrl+Shift+Y`    | Toggle Edit Mode                |
+| `Ctrl+Shift+I`    | Improve selected text (AI)      |
+| `Ctrl+Shift+R`    | Clear cache & reload            |
 
 **To customize shortcuts:**
 1. Go to `chrome://extensions/shortcuts`  (works in both Chrome & Edge)  

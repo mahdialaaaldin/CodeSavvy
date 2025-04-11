@@ -267,12 +267,19 @@ chrome.commands.onCommand.addListener(async (command) => {
             });
             break;
 
-        case 'disable-loader':
+        case 'improve-text':
+            const apiKey = await getGeminiApiKey();
+            if (!apiKey) {
+                console.error("API key missing");
+                return;
+            }
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
-                func: CoreTools.disableLoaders
+                func: improveTextWithAI,
+                args: [apiKey]
             });
             break;
+
         case 'clear-cache':
             await chrome.browsingData.remove({ since: 0 }, { cache: true });
             chrome.tabs.reload(tab.id);
