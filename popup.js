@@ -51,10 +51,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     const disableLoaderButton = document.getElementById('disableLoader');
     disableLoaderButton.style.display = vanriseModeEnabled ? 'flex' : 'none';
 
+    // Check quote setting
+    const showQuote = await new Promise(resolve => {
+        chrome.storage.local.get(['showQuote'], (result) => {
+            resolve(result.showQuote !== undefined ? result.showQuote : true);
+        });
+    });
+
+    // Handle quote display based on setting
+    const quoteElement = document.getElementById("quote");
+    const quoteSection = document.querySelector('.section.quote');
+    if (showQuote) {
+        getQuote()
+            .then(quote => {
+                quoteElement.innerText = `${quote}`;
+            })
+            .catch(error => {
+                console.error("Error fetching quote:", error);
+                quoteElement.innerText = `"Make it work, make it right, make it fast"`;
+            });
+    } else {
+        quoteSection.style.display = "none";
+    }
+
     // Update when settings change
     chrome.storage.onChanged.addListener((changes) => {
         if (changes.vanriseMode) {
             disableLoaderButton.style.display = changes.vanriseMode.newValue ? 'flex' : 'none';
+        }
+        if (changes.showQuote) {
+            if (changes.showQuote.newValue) {
+                quoteElement.style.display = "block";
+                getQuote()
+                    .then(quote => {
+                        quoteElement.innerText = `${quote}`;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching quote:", error);
+                        quoteElement.innerText = `"Make it work, make it right, make it fast"`;
+                    });
+            } else {
+                quoteElement.style.display = "none";
+            }
         }
     });
 
@@ -155,6 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
     });
+
     // Utility handlers
     const buttonActions = {
         clearCacheButton: () => executeInTab(CoreTools.clearCache),
@@ -175,16 +214,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     Object.entries(buttonActions).forEach(([id, action]) => {
         document.getElementById(id)?.addEventListener('click', action);
     });
-
-    // Handle quote display
-    getQuote()
-        .then(quote => {
-            document.getElementById("quote").innerText = `${quote}`;
-        })
-        .catch(error => {
-            console.error("Error fetching quote:", error);
-            document.getElementById("quote").innerText = `"Make it work, make it right, make it fast"`;
-        });
 });
 
 // Handle tab updates

@@ -206,12 +206,30 @@
             color: var(--text);
         }
 
-         .quote {
+        .quote {
             text-align: center;
             font-family: Georgia, serif;
             font-style: italic;
             border-top: 1px solid var(--border);
-         }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .logo {
+                color: #4fd1c5; /* Teal-300 - matches modern dark UIs */
+            }
+
+            img.ai-logo {
+                filter: invert(0.85) hue-rotate(180deg) brightness(1.1);
+            }
+
+            #revealPasswords img {
+                filter: invert(1);
+            }
+
+            #changeFont img {
+                filter: invert(1);
+            }
+        }
 
     </style>
 </head>

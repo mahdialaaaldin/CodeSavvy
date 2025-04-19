@@ -5,15 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodeSavvy Settings</title>
     <style>
-        /* Design Tokens */
         :root {
             --color-primary: #00796b;
+            --color-primary-light: #e0f7fa;
             --color-text: #2d3748;
             --color-text-muted: #718096;
+            --color-bg: #f8fafc;
+            --color-card-bg: #fff;
             --color-border: #e2e8f0;
             --shadow-focus: 0 0 0 3px rgba(0, 121, 107, 0.1);
             --radius-base: 0.375rem;
             --transition-base: 0.2s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-text: #f8fafc;
+                --color-text-muted: #94a3b8;
+                --color-bg: #1e293b;
+                --color-card-bg: #334155;
+                --color-border: #475569;
+                --color-primary: #4fd1c5;
+                --shadow-focus: 0 0 0 3px rgba(79, 209, 197, 0.2);
+            }
+
+            .input-field {
+                background-color: #1e293b;
+            }
+
+            .link {
+                color: var(--color-primary-light);
+            }
+
+            ::placeholder {
+                color: #94a3b8;
+                opacity: 1;
+            }
         }
 
         /* Base Styles */
@@ -21,8 +48,10 @@
             width: 400px;
             padding: 1.5rem;
             font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--color-bg);
             color: var(--color-text);
             line-height: 1.5;
+            transition: background-color var(--transition-base), color var(--transition-base);
         }
 
         /* Components */
@@ -30,20 +59,21 @@
             padding: 1.5rem 0;
         }
 
-        .settings-section:first-child {
-            padding-bottom: 0;
-            border-bottom: 1px solid var(--color-border);
-        }
+            .settings-section:first-child {
+                padding-bottom: 0;
+                border-bottom: 1px solid var(--color-border);
+            }
 
-        .settings-section:last-child {
-            border-bottom: 0;
-            padding-bottom: 0;
-        }
+            .settings-section:last-child {
+                border-bottom: 0;
+                padding-bottom: 0;
+            }
 
         .settings-section__title {
             font-size: 1.25rem;
             margin: 0 0 1rem;
             font-weight: 600;
+            color: var(--color-primary);
         }
 
         .form-control {
@@ -55,19 +85,22 @@
             padding: 0.5rem 0.75rem;
             border: 1px solid var(--color-border);
             border-radius: var(--radius-base);
-            transition: border-color var(--transition-base);
+            background-color: var(--color-card-bg);
+            color: var(--color-text);
+            transition: all var(--transition-base);
         }
 
-        .input-field:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: var(--shadow-focus);
-        }
+            .input-field:focus {
+                outline: none;
+                border-color: var(--color-primary);
+                box-shadow: var(--shadow-focus);
+            }
 
         .checkbox-group {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            margin-bottom: 0.75rem;
         }
 
         .checkbox {
@@ -88,40 +121,51 @@
             transition: opacity var(--transition-base);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             margin: 1rem auto 0;
+            cursor: pointer;
         }
 
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-primary:active { opacity: 0.8; }
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
+
+            .btn-primary:active {
+                opacity: 0.8;
+            }
 
         /* Utilities */
         .text-help {
             font-size: 0.75rem;
             color: var(--color-text-muted);
             margin: 0.5rem 0 0;
+            line-height: 1.4;
         }
 
         .link {
             color: var(--color-primary);
             text-decoration: none;
+            transition: color var(--transition-base);
         }
 
-        .link:hover { text-decoration: underline; }
+            .link:hover {
+                text-decoration: underline;
+                color: var(--color-primary-light);
+            }
     </style>
 </head>
 <body>
     <section class="settings-section">
         <h2 class="settings-section__title">API Key Settings</h2>
         <div class="form-control">
-            <input type="password" 
+            <input type="password"
                    class="input-field"
-                   id="apiKey" 
+                   id="apiKey"
                    placeholder="Enter your Gemini API key"
                    aria-label="Gemini API key">
             <p class="text-help">
-                Get your API key from 
-                <a href="https://aistudio.google.com/app/apikey" 
+                Get your API key from
+                <a href="https://aistudio.google.com/app/apikey"
                    class="link"
-                   target="_blank" 
+                   target="_blank"
                    rel="noopener noreferrer">
                     Google AI Studio
                 </a>
@@ -132,19 +176,31 @@
     <section class="settings-section">
         <h2 class="settings-section__title">Advanced Settings</h2>
         <div class="checkbox-group">
-            <input type="checkbox" 
+            <input type="checkbox"
                    class="checkbox"
-                   id="vanriseMode" 
+                   id="vanriseMode"
                    aria-describedby="vanriseHelp">
             <label for="vanriseMode">Enable Vanrise-specific Features</label>
         </div>
         <p class="text-help" id="vanriseHelp">
             When enabled, shows Vanrise-specific tools like Loader Disabler
         </p>
+
+        <div class="checkbox-group">
+            <input type="checkbox"
+                   class="checkbox"
+                   id="showQuote"
+                   aria-describedby="quoteHelp"
+                   checked>
+            <label for="showQuote">Show inspirational quote</label>
+        </div>
+        <p class="text-help" id="quoteHelp">
+            When enabled, displays an inspirational quote in the popup
+        </p>
     </section>
 
     <section class="settings-section">
-        <button class="btn-primary" id="saveKey">Save</button>
+        <button class="btn-primary" id="saveKey">Save Settings</button>
     </section>
 
     <script src="options.js"></script>
