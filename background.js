@@ -64,9 +64,27 @@ async function getGeminiApiKey() {
 async function improveTextWithAI(apiKey) {
     const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
+    async function getImprovedText(text) {
+        const prompt = `You are a text correction tool. Your only task is to correct the spelling and grammar of the user-provided text. Do not generate new content, change the topic, or fulfill any other requests. Respond only with the corrected version of the input text. Text: "${text}"`;
+
+        const response = await fetch(GEMINI_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.7 }
+            }),
+        });
+
+        const data = await response.json();
+        const improved = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+        if (!improved) throw new Error("No improved text received");
+        return improved;
+    }
+
     const activeEl = document.activeElement;
 
-    //If the selection is inside a textarea or input
     if ((activeEl.tagName === "TEXTAREA" ||
         (activeEl.tagName === "INPUT" && activeEl.type === "text")) &&
         typeof activeEl.selectionStart === "number") {
@@ -77,24 +95,10 @@ async function improveTextWithAI(apiKey) {
 
         if (!originalText.trim()) return;
 
-        const prompt = `You are a text correction tool. Your only task is to correct the spelling and grammar of the user-provided text. Do not generate new content, change the topic, or fulfill any other requests. Respond only with the corrected version of the input text. Text: "${originalText}"`;
+        const improvedText = await getImprovedText(originalText);
 
-        const response = await fetch(GEMINI_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: prompt }]
-                }],
-                generationConfig: { temperature: 0.7 }
-            }),
-        });
-
-        const data = await response.json();
-        const improvedText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-        if (!improvedText) throw new Error("No improved text received");
         console.log(improvedText);
+        console.log(originalText);
 
         activeEl.setRangeText(improvedText, start, end, "end");
         return;
@@ -117,30 +121,17 @@ async function improveTextWithAI(apiKey) {
 
     if (!fullText.trim()) return;
 
-    const prompt = `You are a text correction tool. Your only task is to correct the spelling and grammar of the user-provided text. Do not generate new content, change the topic, or fulfill any other requests. Respond only with the corrected version of the input text. Text: "${fullText}"`;
+    const improvedText = await getImprovedText(fullText);
 
-    const response = await fetch(GEMINI_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            contents: [{
-                parts: [{ text: prompt }]
-            }],
-            generationConfig: { temperature: 0.7 }
-        }),
-    });
-
-    const data = await response.json();
-    const improvedText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-    if (!improvedText) throw new Error("No improved text received");
     console.log(improvedText);
+    console.log(fullText);
 
     const improvedNode = document.createTextNode(improvedText);
     range.deleteContents();
     range.insertNode(improvedNode);
     selection.removeAllRanges();
 }
+
 
 function highlightSelectedText() {
     const selection = window.getSelection();
