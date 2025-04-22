@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const quoteElement = document.getElementById("quote");
     const quoteSection = document.querySelector('.section.quote');
     if (showQuote) {
+        quoteSection.style.display = "block";
         getQuote()
             .then(quote => {
                 quoteElement.innerText = `${quote}`;
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(error => {
                         console.error("Error fetching quote:", error);
                         quoteElement.innerText = `"Make it work, make it right, make it fast"`;
+                        quoteElement.style.display = "block";
                     });
             } else {
                 quoteElement.style.display = "none";
