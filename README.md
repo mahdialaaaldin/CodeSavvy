@@ -7,27 +7,28 @@ A developer-focused browser extension for real-time web page manipulation with e
 ## **Features**
 
 ### **Core Tools**
-- **Unlock Elements**: Remove `disabled` attributes and classes
-- **Remove Input Limits**: Delete `maxlength` restrictions
-- **Reveal Passwords**: Show hidden password fields
-- **Edit Mode**: Toggle `document.designMode` for content editing
-- **Change Fonts**: Apply 30+ fonts to page content
-- **Disable Loaders**: Hide loading indicators (Vanrise-specific)
-- **AI-Powered Text Improvement**: Correct spelling/grammar via Gemini API
+- **Unlock Elements**: Remove `disabled` attributes and classes  
+- **Remove Input Limits**: Delete `maxlength` restrictions  
+- **Reveal Passwords**: Show hidden password fields  
+- **Edit Mode**: Toggle `document.designMode` for content editing  
+- **Change Fonts**: Apply 30+ fonts to page content  
+- **Disable Loaders**: Hide loading indicators (Vanrise-specific)  
+- **AI-Powered Text Improvement**: Correct spelling and grammar via Gemini API  
 
 ### **Utilities**
-- **Clear Cache**: One-click cache cleanup with auto-reload
-- **Screenshot**: Capture visible page area
-- **Fullscreen**: Enter fullscreen mode
+- **Clear Cache**: One-click cache cleanup with auto-reload  
+- **Screenshot**: Capture visible page area  
+- **Fullscreen**: Enter fullscreen mode  
 
 ### **Text Actions** (Right-click menu)
 Context menu with text transformations for selected text:
-- **Improve Text**: AI-powered grammar/spelling correction
-- **Highlight Text**: Yellow background highlighting (currently in **Beta** and will undergo further improvements)
-- **Case Conversions**: 8 different case styles
-- **Slugify**: URL-friendly formatting
+- **Improve Text**: AI-powered grammar and spelling correction  
+- **Highlight Text**: Yellow background highlighting (currently in **Beta**)  
+- **Case Conversions**: Eight case styles (sentence, lower, upper, title, etc)  
+- **Slugify**: URL-friendly formatting  
 
 ---
+
 ## **Preview**
 
 Below is a preview of the CodeSavvy extension interface:
@@ -44,54 +45,79 @@ git clone https://github.com/vr-malaadin/CodeSavvy.git
 ```
 
 ### 2. Load the Extension
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable **Developer mode** in the top-right corner
-3. Click **Load unpacked** and select the project folder
+1. Open Chrome and go to `chrome://extensions/`  
+2. Enable **Developer mode** in the top-right corner  
+3. Click **Load unpacked** and select the project folder  
 
 ---
 
 ## **Usage**
 
-### Popup Tools:
-- **Unlock Elements**: Makes disabled elements editable
-- **Unlimited MaxLength**: Removes character limits in input fields
-- **Toggle Design Mode**: Edit page content directly
-- **Take Screenshot**: Captures and saves the visible part of the active tab as an image.
-- **Make Page Full Screen**: Expands the active tab's webpage to full screen mode.
-- **Reveal Passwords**: Converts password fields to text for easy viewing.
-- **Change Font**: 30+ font options with Google Fonts integration
-- **Clear Cache**: Instant cache cleanup + reload
-- **AI Text Correction**: Requires valid Gemini API key
+### Popup Tools
+- **Unlock Elements**: Makes disabled elements editable  
+- **Unlimited MaxLength**: Removes character limits in input fields  
+- **Toggle Design Mode**: Edit page content directly  
+- **Take Screenshot**: Captures and saves the visible part of the active tab as an image  
+- **Make Page Full Screen**: Expands the active tab's webpage to full screen mode  
+- **Reveal Passwords**: Converts password fields to text for easy viewing  
+- **Change Font**: 30+ font options with Google Fonts integration  
+- **Clear Cache**: Instant cache cleanup and reload  
+- **AI Text Correction**: Requires a valid Gemini API key  
 
-### Context Menu Text Actions:
-1. Select text > Right-click > **Text Actions**
+### Context Menu Text Actions
+1. Select text > Right-click > **Text Actions**  
 2. Choose from:
-   - Case transformations (Sentence, Lower, Upper, etc)
-   - Highlight selected text
-   - AI-powered text improvement
-   - Slug generation for URLs
-
-### API Setup:
-1. Click extension ⚙️ icon > Settings
-2. Enter [Gemini API key](https://aistudio.google.com/app/apikey)
-3. Click Save - key stored locally in browser storage
+   - Case transformations (Sentence, Lower, Upper, Title, etc)  
+   - Highlight selected text  
+   - AI-powered text improvement  
+   - Slug generation for URLs  
 
 ---
-### ⌨️ Keyboard Shortcuts (Customizable)
-Quick-access shortcuts for power users (can be modified in Chrome settings):
+
+## **Options & API Setup**
+
+Access and configure settings on the extension’s options page:
+
+### 1. API Key Configuration
+- Navigate to the extension settings via the ⚙️ icon  
+- Enter your **Gemini API Key** (used for AI-powered text correction)  
+- The key is stored securely in `chrome.storage.local`  
+- Obtain an API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+
+### 2. Advanced Settings
+Checkbox toggles for optional features:
+- **Vanrise Mode**  
+  - Description: Enables features specific to Vanrise systems  
+  - Effect: Shows the **Disable Loaders** button in the popup when enabled  
+- **Inspirational Quote**  
+  - Description: Toggles display of a motivational quote in the extension popup  
+  - Default: Enabled  
+  - Fallback quote (if API is unreachable):  
+    _"Make it work, make it right, make it fast."_  
+
+### 3. Save Settings
+- Click the **Save Settings** button to persist your configuration  
+
+---
+
+### ** Keyboard Shortcuts** (Customizable)
 
 | Shortcut          | Action                          |
 |-------------------|---------------------------------|
 | `Ctrl+Shift+E`    | Unlock elements                 |
-| `Ctrl+Shift+Y`    | Toggle Edit Mode                |
-| `Ctrl+Shift+I`    | Improve selected text (AI)      |
-| `Ctrl+Shift+R`    | Clear cache & reload            |
+| `Ctrl+Shift+Y`    | Toggle edit mode                |
+| `Ctrl+Shift+L`    | Improve selected text (AI)      |
+| `Ctrl+Shift+R`    | Clear cache and reload          |
 
-**To customize shortcuts:**
-1. Go to `chrome://extensions/shortcuts`  (works in both Chrome & Edge)  
-2. Find "CodeSavvy Pro" in the list  
-3. Click the shortcut field and enter your preferred key combo  
-4. Shortcuts update instantly (no restart needed)
+### **Note**
+Shortcuts may conflict with default Chrome or Edge bindings – customize if unavailable.
+
+### **How to Customize**
+1. Open `chrome://extensions/shortcuts` in your browser.  
+2. Locate **CodeSavvy Pro** in the list.  
+3. Click the shortcut field for the desired action and enter your preferred key combination.  
+4. Changes take effect immediately—no restart required.  
+
 
 ---
 
@@ -103,9 +129,10 @@ CodeSavvy/
 ├── popup.js          # UI functionality
 ├── apiService.js     # Gemini API interactions
 ├── background.js     # Context menu handlers
+├── coreFunctions.js  # Centralized core logic
 ├── manifest.json     # Extension configuration
 ├── options.html      # Settings page
-├── options.js        # API key management
+├── options.js        # API key and settings management
 ├── Icons/            # Visual assets
 │   ├── icon16.png
 │   ├── icon48.png
@@ -119,42 +146,46 @@ CodeSavvy/
 ## **Permissions**
 
 Required Chrome permissions:
-- `activeTab`: Modify current webpage
-- `scripting`: Inject content scripts
-- `storage`: Save API key/configurations
-- `contextMenus`: Create text action menu
-- `browsingData`: Clear cache functionality
-- `notifications`: Show status messages
+- `activeTab`: Modify current webpage  
+- `scripting`: Inject content scripts  
+- `storage`: Save API key and configurations  
+- `contextMenus`: Create text action menu  
+- `browsingData`: Clear cache functionality  
+- `notifications`: Show status messages  
 
 ---
 
 ## **Technical Notes**
-- API key stored locally using chrome.storage.local
-- Fallback quote used when API unavailable: "Make it work, make it right, make it fast."
-- Dark/light mode support based on system preference
-- Core functionality centralized in `coreFunctions.js` for maintainability
+- API key stored using `chrome.storage.local`  
+- Fallback quote when API is unavailable: _"Make it work, make it right, make it fast."_  
+- Dark and light mode support based on system preference  
+- Core functionality centralized in `coreFunctions.js` for maintainability  
 
 ---
 
 ## **Contributing**
-Contributions welcome! Please:
-1. Fork the repository
-2. Create feature branch (`feature/your-feature`)
-3. Submit pull request
+Contributions are welcome:
+1. Fork the repository  
+2. Create a feature branch (`feature/your-feature`)  
+3. Submit a pull request  
 
 ---
 
-## License  
-Copyright © 2025 vr-malaadin | mahdialaaaldin (Mahdi). All rights reserved.
+## **License**
 
-This project, including all source code, designs, and functionality, is the intellectual property of the author. You may not use, copy, modify, distribute, or reproduce any part of this project without explicit written permission.
+Copyright © 2025 vr-malaadin | mahdialaaaldin (Mahdi).  
+All rights reserved.  
+No part of this project may be used, copied, modified, or distributed without explicit written permission from the author.
 
-Use of this software or its components for commercial, educational, or personal purposes is not permitted without prior authorization.
+---
 
-## Third-Party Assets  
-Some icons or visual elements used in this project are sourced from FormWeb, particularly from the Flaticon website.
+## **Third-Party Assets**
 
-Unauthorized use or duplication may result in legal action.
+Some icons and visual elements are sourced from FormWeb via Flaticon. Unauthorized use or duplication may result in legal action.
 
-## Contact  
-For inquiries or feedback, contact me via email: **[mahdialaaaldin+codesavvy@gmail.com](mailto:mahdialaaaldin+codesavvy@gmail.com)**
+---
+
+## **Contact**
+
+For inquiries or feedback, contact:  
+**[mahdialaaaldin+codesavvy@gmail.com](mailto:mahdialaaaldin+codesavvy@gmail.com)**

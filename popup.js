@@ -10,7 +10,7 @@ async function executeInTab(func, ...args) {
         return result[0].result;
     } catch (error) {
         console.error('Extension error:', error);
-        showNotification(`Error: ${error.message}`);
+        //showNotification(`Error: ${error.message}`);
     }
 }
 
@@ -120,8 +120,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleBtn.title = `Design mode ${newState ? 'ON' : 'OFF'}`;
     });
 
-    document.getElementById('disableLoader').addEventListener('click', async () => {
-        await executeInTab(CoreTools.disableLoaders);
+    document.getElementById('disableLoader').addEventListener('click', () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            let activeTabId = tabs[0].id;
+            chrome.scripting.executeScript({
+                target: { tabId: activeTabId },
+                func: () => {
+                    console.log("Loader")
+                    document.querySelectorAll('.divLoading').forEach(el => {
+                        el.classList.remove('divLoading');
+                    });
+                }
+            });
+        });
+    });
+
+    document.getElementById('clearCacheButton').addEventListener('click', () => {
+        chrome.browsingData.remove({
+            "since": 0 // Clear all cache
+        }, {
+            "cache": true
+        }, () => {
+            console.log("Cache cleared");
+
+            // Reload the current tab
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                chrome.tabs.reload(tabs[0].id);
+            });
+            setTimeout(() => window.close(), 500);
+        });
     });
 
     // Font changer modal
@@ -198,7 +225,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Utility handlers
     const buttonActions = {
-        clearCacheButton: () => executeInTab(CoreTools.clearCache),
         screenshotButton: async () => {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             const dataUrl = await chrome.tabs.captureVisibleTab();
