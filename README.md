@@ -100,7 +100,7 @@ Checkbox toggles for optional features:
 
 ---
 
-### ** Keyboard Shortcuts** (Customizable)
+## **Keyboard Shortcuts** (Customizable)
 
 | Shortcut          | Action                          |
 |-------------------|---------------------------------|
