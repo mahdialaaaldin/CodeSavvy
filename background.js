@@ -5,8 +5,14 @@ chrome.contextMenus.create({
     contexts: ["selection"],
 });
 
-const actions = [
+// Define all menu options (AI enhancements and other text actions)
+const menuOptions = [
     { id: "improveText", title: "Improve Text" },
+    { id: "enhanceProfessionally", title: "Enhance Professionally" },
+    { id: "addHumor", title: "Add Humor" },
+    { id: "promptEngineer", title: "Prompt Engineer" },
+    { id: "advancedImproveText", title: "Advanced Improve Text" },
+    { id: "separator_ai_tools", type: "separator" },
     { id: "sentenceCase", title: "Sentence case" },
     { id: "lowerCase", title: "lower case" },
     { id: "upperCase", title: "UPPER CASE" },
@@ -15,16 +21,25 @@ const actions = [
     { id: "inverseCase", title: "InVeRsE CaSe" },
     { id: "titleCase", title: "Title Case" },
     { id: "slugify", title: "Slugify" },
+    { id: "separator_text_transform", type: "separator" },
     { id: "highlightText", title: "Highlight Text (Beta)" }
 ];
 
-actions.forEach((action) => {
-    chrome.contextMenus.create({
+// Create all menu items under "Text Actions"
+menuOptions.forEach((action) => {
+    const menuItem = {
         id: action.id,
         parentId: "textActions",
-        title: action.title,
-        contexts: ["selection"],
-    });
+        contexts: ["selection"]
+    };
+
+    if (action.type === "separator") {
+        menuItem.type = "separator";
+    } else {
+        menuItem.title = action.title;
+    }
+
+    chrome.contextMenus.create(menuItem);
 });
 
 // Listen for clicks on the context menu items
@@ -34,18 +49,42 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
             target: { tabId: tab.id },
             func: highlightSelectedText,
         });
-    } else if (info.menuItemId === "improveText") {
+    } else if (["improveText", "enhanceProfessionally", "addHumor", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
         const apiKey = await getGeminiApiKey();
         if (!apiKey) {
             console.error("API key is missing.");
             return;
         }
+        let prompt;
+        switch (info.menuItemId) {
+            case "improveText":
+                prompt = `Correct the spelling and grammar of the following text. Return plain text without any formatting or additional content. Text: "${info.selectionText}"`;
+                break;
+            case "enhanceProfessionally":
+                prompt = `Rephrase the following text to sound more professional and formal. Return plain text without any formatting. Text: "${info.selectionText}"`;
+                break;
+            case "addHumor":
+                prompt = `Rewrite the following text to be humorous or witty while preserving the original meaning. Use a light, clever tone. Return only the humorous version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
+                break;
+            case "advancedImproveText":
+                prompt = `Act as a professional English editor. Improve the following text by correcting spelling, grammar, and punctuation, and enhancing clarity, flow, and readability. Do not add comments or explanations. Return only the edited text as plain text. Text: "${info.selectionText}"`;
+                break;
+            case "promptEngineer":
+                prompt = `You are an expert prompt creator. Your task is to craft an optimized prompt based on the user-provided input for use with ChatGPT, GPT-3, or GPT-4. The output prompt should:
+                    - Be clear, concise, and specific.
+                    - Include instructions to match the user's communication style.
+                    - Be written from the user's perspective, requesting assistance from an AI.
+                    - Avoid ambiguity and ensure actionable instructions.
+                    Input text: "${info.selectionText}"
+                    Return only the optimized prompt as plain text.`;
+                break;
+        }
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            func: improveTextWithAI,
-            args: [apiKey],
+            func: enhanceTextWithAI,
+            args: [apiKey, prompt],
         });
-    } else if (actions.map((a) => a.id).includes(info.menuItemId)) {
+    } else {
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: convertCase,
@@ -53,6 +92,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         });
     }
 });
+
+// Fetch API key from storage
 async function getGeminiApiKey() {
     return new Promise((resolve) => {
         chrome.storage.local.get(['geminiApiKey'], (result) => {
@@ -61,26 +102,25 @@ async function getGeminiApiKey() {
     });
 }
 
-async function improveTextWithAI(apiKey) {
+// AI text enhancement function
+async function enhanceTextWithAI(apiKey, prompt) {
     const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-    async function getImprovedText(text) {
-        const prompt = `You are a text correction tool. Your only task is to correct the spelling and grammar of the user-provided text. Do not generate new content, change the topic, or fulfill any other requests. Respond only with the corrected version of the input text. Text: "${text}"`;
-
+    async function getEnhancedText(textPrompt) {
         const response = await fetch(GEMINI_API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
+                contents: [{ parts: [{ text: textPrompt }] }],
                 generationConfig: { temperature: 0.7 }
             }),
         });
 
         const data = await response.json();
-        const improved = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        const enhanced = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
-        if (!improved) throw new Error("No improved text received");
-        return improved;
+        if (!enhanced) throw new Error("No enhanced text received");
+        return enhanced;
     }
 
     const activeEl = document.activeElement;
@@ -95,16 +135,16 @@ async function improveTextWithAI(apiKey) {
 
         if (!originalText.trim()) return;
 
-        const improvedText = await getImprovedText(originalText);
+        const enhancedText = await getEnhancedText(prompt);
 
-        console.log(improvedText);
+        console.log(enhancedText);
         console.log(originalText);
 
-        activeEl.setRangeText(improvedText, start, end, "end");
+        activeEl.setRangeText(enhancedText, start, end, "end");
         return;
     }
 
-    //Selection in regular DOM content
+    // Selection in regular DOM content
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
@@ -121,18 +161,15 @@ async function improveTextWithAI(apiKey) {
 
     if (!fullText.trim()) return;
 
-    const improvedText = await getImprovedText(fullText);
+    const enhancedText = await getEnhancedText(prompt);
 
-    console.log(improvedText);
-    console.log(fullText);
-
-    const improvedNode = document.createTextNode(improvedText);
+    const enhancedNode = document.createTextNode(enhancedText);
     range.deleteContents();
-    range.insertNode(improvedNode);
+    range.insertNode(enhancedNode);
     selection.removeAllRanges();
 }
 
-
+// Highlight selected text function
 function highlightSelectedText() {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
@@ -149,6 +186,7 @@ function highlightSelectedText() {
     }
 }
 
+// Case conversion function
 function convertCase(caseType) {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
@@ -240,6 +278,7 @@ function convertCase(caseType) {
     parent.removeChild(tempDiv);
 }
 
+// Handle keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -266,8 +305,25 @@ chrome.commands.onCommand.addListener(async (command) => {
             }
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
-                func: improveTextWithAI,
-                args: [apiKey]
+                func: () => {
+                    const selection = window.getSelection();
+                    if (!selection.rangeCount) return;
+                    const text = selection.toString();
+                    if (!text.trim()) return;
+                    return text;
+                }
+            }).then(async (results) => {
+                const selectedText = results[0].result;
+                if (selectedText) {
+                    const prompt = `Correct the spelling and grammar of the following text. Return plain text without any formatting or additional content. Text: "${selectedText}"`;
+                    chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        func: enhanceTextWithAI,
+                        args: [apiKey, prompt]
+                    });
+                }
+            }).catch((error) => {
+                console.error("Error getting selected text:", error);
             });
             break;
 
