@@ -46,7 +46,7 @@ Below is a preview of the CodeSavvy extension interface:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/vr-malaadin/CodeSavvy.git
+git clone https://github.com/mahdialaaaldin/CodeSavvy.git
 ```
 
 ### 2. Load the Extension
@@ -167,7 +167,7 @@ CodeSavvy/
 
 ## **License**
 
-Copyright © 2025 vr-malaadin | mahdialaaaldin (Mahdi).  
+Copyright © 2025 mahdialaaaldin.  
 All rights reserved.  
 No part of this project may be used, copied, modified, or distributed without explicit written permission.
 
