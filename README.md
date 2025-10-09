@@ -72,8 +72,9 @@ git clone https://github.com/mahdialaaaldin/CodeSavvy.git
 ### Context Menu Text Actions
 1. Select text > Right-click > **Text Actions**  
 2. Choose from:
-   - **AI Enhancements**: Improve Text, Enhance Professionally, Add Humor, Advanced Improve Text, Prompt Engineer  
-   - **Case Transformations**: Sentence, Lower, Upper, Capitalized, Alternating, Inverse, Title, Slugify  
+   - **AI Enhancements**: Improve Text, Enhance Professionally, Add Humor, Sarcastic Mode, Advanced Improve Text, Prompt Engineer  
+   - **Case Transformations**: Sentence, Lower, Upper, Capitalized, Alternating, Inverse, Title, Slugify 
+   - **Text Transformations**: Convert Arabic to English (Beta), Convert English to Arabic (Beta) 
    - **Highlight Text**: Apply yellow highlight (Beta)  
 
 ---
