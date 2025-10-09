@@ -10,6 +10,7 @@ const menuOptions = [
     { id: "improveText", title: "Improve Text" },
     { id: "enhanceProfessionally", title: "Enhance Professionally" },
     { id: "addHumor", title: "Add Humor" },
+    { id: "sarcasticMode", title: "Sarcastic Mode" },
     { id: "promptEngineer", title: "Prompt Engineer" },
     { id: "advancedImproveText", title: "Advanced Improve Text" },
     { id: "separator_ai_tools", type: "separator" },
@@ -49,7 +50,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
             target: { tabId: tab.id },
             func: highlightSelectedText,
         });
-    } else if (["improveText", "enhanceProfessionally", "addHumor", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
+    } else if (["improveText", "enhanceProfessionally", "addHumor", "sarcasticMode", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
         const apiKey = await getGeminiApiKey();
         if (!apiKey) {
             console.error("API key is missing.");
@@ -64,7 +65,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
                 prompt = `Rephrase the following text to sound more professional and formal. Return plain text without any formatting. Text: "${info.selectionText}"`;
                 break;
             case "addHumor":
-                prompt = `Rewrite the following text to be humorous or witty while preserving the original meaning. Use a light, clever tone. Return only the humorous version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
+                prompt = `Rewrite the following text to be hilariously funny and witty, incorporating clever wordplay, absurd twists, and light-hearted humor while preserving the original meaning. Keep it playful and family-friendly. Return only the funny version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
+                break;
+            case "sarcasticMode":
+                prompt = `Rewrite the following text to be extremely rude and offensive, incorporating profanity, bad words, and aggressive insults liberally while preserving the original meaning. Make it as insulting and crude as possible. Return only the rude version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
                 break;
             case "advancedImproveText":
                 prompt = `Act as a professional English editor. Improve the following text by correcting spelling, grammar, and punctuation, and enhancing clarity, flow, and readability. Do not add comments or explanations. Return only the edited text as plain text. Text: "${info.selectionText}"`;
