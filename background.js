@@ -23,6 +23,8 @@ const menuOptions = [
     { id: "titleCase", title: "Title Case" },
     { id: "slugify", title: "Slugify" },
     { id: "separator_text_transform", type: "separator" },
+    { id: "convertArabicToEnglish", title: "Convert Arabic to English (Beta)" },
+    { id: "convertEnglishToArabic", title: "Convert English to Arabic (Beta)" },
     { id: "highlightText", title: "Highlight Text (Beta)" }
 ];
 
@@ -87,6 +89,13 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
             target: { tabId: tab.id },
             func: enhanceTextWithAI,
             args: [apiKey, prompt],
+        });
+    } else if (["convertArabicToEnglish", "convertEnglishToArabic"].includes(info.menuItemId)) {
+        const direction = info.menuItemId === "convertArabicToEnglish" ? "arabic-to-english" : "english-to-arabic";
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: convertKeyboardLayoutInSelection,
+            args: [direction, info.selectionText],
         });
     } else {
         chrome.scripting.executeScript({
@@ -282,6 +291,66 @@ function convertCase(caseType) {
     parent.removeChild(tempDiv);
 }
 
+function convertKeyboardLayoutInSelection(direction, selectedText) {
+    // Define keyboard layout conversion maps
+    const englishToArabicMap = { '`': 'ذ', 'q': 'ض', 'w': 'ص', 'e': 'ث', 'r': 'ق', 't': 'ف', 'y': 'غ', 'u': 'ع', 'i': 'ه', 'o': 'خ', 'p': 'ح', '[': 'ج', ']': 'د', 'a': 'ش', 's': 'س', 'd': 'ي', 'f': 'ب', 'g': 'ل', 'h': 'ا', 'j': 'ت', 'k': 'ن', 'l': 'م', ';': 'ك', "'": 'ط', 'z': 'ئ', 'x': 'ء', 'c': 'ؤ', 'v': 'ر', 'b': 'لا', 'n': 'ى', 'm': 'ة', ',': 'و', '.': 'ز', '/': 'ظ' };
+    const arabicToEnglishMap = { 'ذ': '`', 'ض': 'q', 'ص': 'w', 'ث': 'e', 'ق': 'r', 'ف': 't', 'غ': 'y', 'ع': 'u', 'ه': 'i', 'خ': 'o', 'ح': 'p', 'ج': '[', 'د': ']', 'ش': 'a', 'س': 's', 'ي': 'd', 'ب': 'f', 'ل': 'g', 'ا': 'h', 'ت': 'j', 'ن': 'k', 'م': 'l', 'ك': ';', 'ط': "'", 'ئ': 'z', 'ء': 'x', 'ؤ': 'c', 'ر': 'v', 'لا': 'b', 'ى': 'n', 'ة': 'm', 'و': ',', 'ز': '.', 'ظ': '/' };
+
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    const fragment = range.cloneContents();
+    const tempDiv = document.createElement('div');
+    tempDiv.appendChild(fragment);
+
+    // Process all text nodes within the selection
+    const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+    let fullText = '';
+    while (walker.nextNode()) {
+        fullText += walker.currentNode.textContent;
+    }
+
+    if (!fullText.trim()) return;
+
+    // Convert the text
+    const convertedText = convertKeyboardLayout(fullText, direction);
+
+    // Handle input/textarea elements
+    const activeEl = document.activeElement;
+    if (
+        (activeEl.tagName === "TEXTAREA" ||
+            (activeEl.tagName === "INPUT" && activeEl.type === "text")) &&
+        typeof activeEl.selectionStart === "number"
+    ) {
+        const start = activeEl.selectionStart;
+        const end = activeEl.selectionEnd;
+        activeEl.setRangeText(convertedText, start, end, "end");
+        return;
+    }
+
+    // Handle regular DOM content
+    const convertedNode = document.createTextNode(convertedText);
+    console.log(selection);
+    console.log(convertedText);
+    range.deleteContents();
+    range.insertNode(convertedNode);
+    selection.removeAllRanges();
+
+    // Send notification
+    chrome.runtime.sendMessage({
+        action: 'showNotification',
+        message: `Text converted to ${direction === 'arabic-to-english' ? 'English' : 'Arabic'} layout`
+    });
+    function convertKeyboardLayout(text, direction) {
+        const map = direction === 'arabic-to-english' ? arabicToEnglishMap : englishToArabicMap;
+        let output = '';
+        for (let char of text) {
+            output += map[char] || char; // Use mapped character or keep original if not in map
+        }
+        return output;
+    }
+}
 // Handle keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
