@@ -33,10 +33,6 @@
                 background-color: #1e293b;
             }
 
-            .link {
-                color: var(--color-primary-light);
-            }
-
             ::placeholder {
                 color: #94a3b8;
                 opacity: 1;
@@ -80,6 +76,12 @@
             margin-bottom: 1.25rem;
         }
 
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
         .input-field {
             width: 100%;
             padding: 0.5rem 0.75rem;
@@ -95,6 +97,23 @@
                 border-color: var(--color-primary);
                 box-shadow: var(--shadow-focus);
             }
+
+        .visibility-toggle {
+            position: absolute;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: var(--radius-base);
+            transition: color var(--transition-base);
+        }
+
+        .visibility-toggle:hover {
+            color: var(--color-text);
+            background-color: var(--color-border);
+        }
 
         .checkbox-group {
             display: flex;
@@ -140,27 +159,25 @@
             line-height: 1.4;
         }
 
-        .link {
-            color: var(--color-primary);
-            text-decoration: none;
-            transition: color var(--transition-base);
-        }
-
-            .link:hover {
-                text-decoration: underline;
-                color: var(--color-primary-light);
-            }
     </style>
 </head>
 <body>
     <section class="settings-section">
         <h2 class="settings-section__title">API Key Settings</h2>
         <div class="form-control">
-            <input type="password"
-                   class="input-field"
-                   id="apiKey"
-                   placeholder="Enter your Gemini API key"
-                   aria-label="Gemini API key">
+            <div class="input-container">
+                <input type="password"
+                       class="input-field"
+                       id="apiKey"
+                       placeholder="Enter your Gemini API key"
+                       aria-label="Gemini API key">
+                <button type="button" id="toggleVisibility" class="visibility-toggle" aria-label="Show API key">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
             <p class="text-help">
                 Get your API key from
                 <a href="https://aistudio.google.com/app/apikey"
