@@ -23,7 +23,8 @@
     "tabs",
     "browsingData",
     "contextMenus",
-    "notifications"
+    "notifications",
+    "downloads"
   ],
   "host_permissions": [
     "<all_urls>"
