@@ -45,66 +45,14 @@ menuOptions.forEach((action) => {
     chrome.contextMenus.create(menuItem);
 });
 
-// Listen for clicks on the context menu items
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-    if (info.menuItemId === "highlightText") {
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: highlightSelectedText,
+// Helper function to get selected API provider
+async function getSelectedApiProvider() {
+    return new Promise((resolve) => {
+        chrome.storage.local.get(['apiProvider'], (result) => {
+            resolve(result.apiProvider || 'gemini');
         });
-    } else if (["improveText", "enhanceProfessionally", "addHumor", "sarcasticMode", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
-        const apiKey = await getGeminiApiKey();
-        if (!apiKey) {
-            console.error("API key is missing.");
-            return;
-        }
-        let prompt;
-        switch (info.menuItemId) {
-            case "improveText":
-                prompt = `Correct the spelling and grammar of the following text. Return plain text without any formatting or additional content. Text: "${info.selectionText}"`;
-                break;
-            case "enhanceProfessionally":
-                prompt = `Rephrase the following text to sound more professional and formal. Return plain text without any formatting. Text: "${info.selectionText}"`;
-                break;
-            case "addHumor":
-                prompt = `Rewrite the following text to be hilariously funny and witty, incorporating clever wordplay, absurd twists, and light-hearted humor while preserving the original meaning. Keep it playful and family-friendly. Return only the funny version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
-                break;
-            case "sarcasticMode":
-                prompt = `Rewrite the following text to be extremely rude and offensive, incorporating profanity, bad words, and aggressive insults liberally while preserving the original meaning. Make it as insulting and crude as possible. Return only the rude version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
-                break;
-            case "advancedImproveText":
-                prompt = `Act as a professional English editor. Improve the following text by correcting spelling, grammar, and punctuation, and enhancing clarity, flow, and readability. Do not add comments or explanations. Return only the edited text as plain text. Text: "${info.selectionText}"`;
-                break;
-            case "promptEngineer":
-                prompt = `You are an expert prompt creator. Your task is to craft an optimized prompt based on the user-provided input for use with ChatGPT, GPT-3, or GPT-4. The output prompt should:
-                    - Be clear, concise, and specific.
-                    - Include instructions to match the user's communication style.
-                    - Be written from the user's perspective, requesting assistance from an AI.
-                    - Avoid ambiguity and ensure actionable instructions.
-                    Input text: "${info.selectionText}"
-                    Return only the optimized prompt as plain text.`;
-                break;
-        }
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: enhanceTextWithAI,
-            args: [apiKey, prompt],
-        });
-    } else if (["convertArabicToEnglish", "convertEnglishToArabic"].includes(info.menuItemId)) {
-        const direction = info.menuItemId === "convertArabicToEnglish" ? "arabic-to-english" : "english-to-arabic";
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: convertKeyboardLayoutInSelection,
-            args: [direction, info.selectionText],
-        });
-    } else {
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: convertCase,
-            args: [info.menuItemId],
-        });
-    }
-});
+    });
+}
 
 // Fetch API key from storage
 async function getGeminiApiKey() {
@@ -115,28 +63,59 @@ async function getGeminiApiKey() {
     });
 }
 
-// AI text enhancement function
-async function enhanceTextWithAI(apiKey, prompt) {
-    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+// AI text enhancement function with dual API support and automatic fallback
+async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
+    // Helper function to get enhanced text from Gemini
+    async function getEnhancedTextFromGemini(apiKey, prompt) {
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-    async function getEnhancedText(textPrompt) {
         const response = await fetch(GEMINI_API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: textPrompt }] }],
+                contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: { temperature: 0.7 }
             }),
         });
 
-        const data = await response.json();
-        const enhanced = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+        }
 
-        if (!enhanced) throw new Error("No enhanced text received");
-        return enhanced;
+        const data = await response.json();
+        const enhancedText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+        if (!enhancedText) {
+            throw new Error("No enhanced text received from Gemini");
+        }
+
+        return enhancedText;
     }
 
+    // Helper function to get enhanced text from Pollinations
+    async function getEnhancedTextFromPollinations(prompt) {
+        prompt += `Note that this prompt is sent to you at ${new Date().toLocaleString()}`;
+        const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(prompt)}`;
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            throw new Error(`Pollinations API error (${response.status})`);
+        }
+
+        const enhancedText = await response.text();
+
+        if (!enhancedText || enhancedText.trim() === '') {
+            throw new Error("Empty response from Pollinations");
+        }
+
+        return enhancedText;
+    }
     const activeEl = document.activeElement;
+    const selection = window.getSelection();
+
+    // Get the text to enhance
+    let textToEnhance;
 
     if ((activeEl.tagName === "TEXTAREA" ||
         (activeEl.tagName === "INPUT" && activeEl.type === "text")) &&
@@ -144,43 +123,98 @@ async function enhanceTextWithAI(apiKey, prompt) {
 
         const start = activeEl.selectionStart;
         const end = activeEl.selectionEnd;
-        const originalText = activeEl.value.substring(start, end);
+        textToEnhance = activeEl.value.substring(start, end);
+    } else if (selection.rangeCount) {
+        const range = selection.getRangeAt(0);
+        const fragment = range.cloneContents();
+        const tempDiv = document.createElement('div');
+        tempDiv.appendChild(fragment);
 
-        if (!originalText.trim()) return;
-
-        const enhancedText = await getEnhancedText(prompt);
-
-        console.log(enhancedText);
-        console.log(originalText);
-
-        activeEl.setRangeText(enhancedText, start, end, "end");
-        return;
+        const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+        textToEnhance = '';
+        let node;
+        while (node = walker.nextNode()) {
+            textToEnhance += node.textContent;
+        }
     }
 
-    // Selection in regular DOM content
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
+    if (!textToEnhance.trim()) return;
 
-    const range = selection.getRangeAt(0);
-    const fragment = range.cloneContents();
-    const tempDiv = document.createElement('div');
-    tempDiv.appendChild(fragment);
+    let enhancedText;
+    let usedProvider = primaryApiProvider;
+    let errorMessage = '';
 
-    const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
-    let fullText = '', node;
-    while (node = walker.nextNode()) {
-        fullText += node.textContent;
+    try {
+        // Try primary provider first
+        if (primaryApiProvider === 'gemini') {
+            if (!geminiApiKey) {
+                throw new Error("Gemini API key is missing");
+            }
+
+            try {
+                enhancedText = await getEnhancedTextFromGemini(geminiApiKey, prompt);
+                console.log(`Successfully used Gemini API`);
+            } catch (geminiError) {
+                console.warn(`Gemini API failed, falling back to Pollinations: ${geminiError.message}`);
+                // Fall back to Pollinations
+                enhancedText = await getEnhancedTextFromPollinations(prompt);
+                usedProvider = 'pollinations (fallback)';
+                errorMessage = `Gemini failed: ${geminiError.message}. Using Pollinations instead.`;
+            }
+        } else {
+            // Primary provider is Pollinations
+            try {
+                enhancedText = await getEnhancedTextFromPollinations(prompt);
+                console.log(`Successfully used Pollinations API`);
+            } catch (pollinationsError) {
+                console.warn(`Pollinations API failed, falling back to Gemini: ${pollinationsError.message}`);
+                // Fall back to Gemini if we have a key
+                if (geminiApiKey) {
+                    try {
+                        enhancedText = await getEnhancedTextFromGemini(geminiApiKey, prompt);
+                        usedProvider = 'gemini (fallback)';
+                        errorMessage = `Pollinations failed: ${pollinationsError.message}. Using Gemini instead.`;
+                    } catch (geminiError) {
+                        // Both failed
+                        throw new Error(`Both APIs failed: Pollinations - ${pollinationsError.message}, Gemini - ${geminiError.message}`);
+                    }
+                } else {
+                    // No Gemini key, can't fall back
+                    throw pollinationsError;
+                }
+            }
+        }
+
+        enhancedText = enhancedText.trim();
+
+        // Insert the enhanced text
+        if (activeEl.tagName === "TEXTAREA" || activeEl.tagName === "INPUT") {
+            const start = activeEl.selectionStart;
+            const end = activeEl.selectionEnd;
+            activeEl.setRangeText(enhancedText, start, end, "end");
+        } else if (selection.rangeCount) {
+            const range = selection.getRangeAt(0);
+            const enhancedNode = document.createTextNode(enhancedText);
+            range.deleteContents();
+            range.insertNode(enhancedNode);
+            selection.removeAllRanges();
+        }
+
+        // Show notification if we used fallback
+        if (errorMessage && usedProvider.includes('fallback')) {
+            // We'll send a message to the background script to show a notification
+            chrome.runtime.sendMessage({
+                action: 'showFallbackNotification',
+                message: `Text enhanced using ${usedProvider}. ${errorMessage}`
+            });
+        }
+
+    } catch (error) {
+        console.error(`All AI providers failed:`, error);
+        console.log(`Failed to enhance text: ${error.message}`);
     }
-
-    if (!fullText.trim()) return;
-
-    const enhancedText = await getEnhancedText(prompt);
-
-    const enhancedNode = document.createTextNode(enhancedText);
-    range.deleteContents();
-    range.insertNode(enhancedNode);
-    selection.removeAllRanges();
 }
+
 
 // Highlight selected text function
 function highlightSelectedText() {
@@ -342,15 +376,90 @@ function convertKeyboardLayoutInSelection(direction, selectedText) {
         action: 'showNotification',
         message: `Text converted to ${direction === 'arabic-to-english' ? 'English' : 'Arabic'} layout`
     });
+
     function convertKeyboardLayout(text, direction) {
         const map = direction === 'arabic-to-english' ? arabicToEnglishMap : englishToArabicMap;
         let output = '';
         for (let char of text) {
-            output += map[char] || char; // Use mapped character or keep original if not in map
+            output += map[char] || char;
         }
         return output;
     }
 }
+
+// Listen for clicks on the context menu items
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId === "highlightText") {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: highlightSelectedText,
+        });
+    } else if (["improveText", "enhanceProfessionally", "addHumor", "sarcasticMode", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
+        const apiProvider = await getSelectedApiProvider();
+        const geminiApiKey = apiProvider === 'gemini' ? await getGeminiApiKey() : await getGeminiApiKey(); // Always try to get it for fallback
+
+        // Check API key only for Gemini as primary
+        if (apiProvider === 'gemini' && !geminiApiKey) {
+            console.error("Gemini API key is missing.");
+            // Show notification to user
+            chrome.notifications.create({
+                type: 'basic',
+                iconUrl: 'Icons/icon48.png',
+                title: 'CodeSavvy - API Key Required',
+                message: 'Please set your Gemini API key in the extension settings to use Gemini AI features.'
+            });
+            return;
+        }
+
+        let prompt;
+        switch (info.menuItemId) {
+            case "improveText":
+                prompt = `Correct the spelling and grammar of the following text. Return plain text without any formatting or additional content. Text: "${info.selectionText}"`;
+                break;
+            case "enhanceProfessionally":
+                prompt = `Rephrase the following text to sound more professional and formal. Return plain text without any formatting. Text: "${info.selectionText}"`;
+                break;
+            case "addHumor":
+                prompt = `Rewrite the following text to be hilariously funny and witty, incorporating clever wordplay, absurd twists, and light-hearted humor while preserving the original meaning. Keep it playful and family-friendly. Return only the funny version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
+                break;
+            case "sarcasticMode":
+                prompt = `Rewrite the following text to be extremely rude and offensive, incorporating profanity, bad words, and aggressive insults liberally while preserving the original meaning. Make it as insulting and crude as possible. Return only the rude version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
+                break;
+            case "advancedImproveText":
+                prompt = `Act as a professional English editor. Improve the following text by correcting spelling, grammar, and punctuation, and enhancing clarity, flow, and readability. Do not add comments or explanations. Return only the edited text as plain text. Text: "${info.selectionText}"`;
+                break;
+            case "promptEngineer":
+                prompt = `You are an expert prompt creator. Your task is to craft an optimized prompt based on the user-provided input for use with ChatGPT, GPT-3, or GPT-4. The output prompt should:
+                    - Be clear, concise, and specific.
+                    - Include instructions to match the user's communication style.
+                    - Be written from the user's perspective, requesting assistance from an AI.
+                    - Avoid ambiguity and ensure actionable instructions.
+                    Input text: "${info.selectionText}"
+                    Return only the optimized prompt as plain text.`;
+                break;
+        }
+
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: enhanceTextWithAI,
+            args: [apiProvider, geminiApiKey, prompt],
+        });
+    } else if (["convertArabicToEnglish", "convertEnglishToArabic"].includes(info.menuItemId)) {
+        const direction = info.menuItemId === "convertArabicToEnglish" ? "arabic-to-english" : "english-to-arabic";
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: convertKeyboardLayoutInSelection,
+            args: [direction, info.selectionText],
+        });
+    } else {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: convertCase,
+            args: [info.menuItemId],
+        });
+    }
+});
+
 // Handle keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -371,11 +480,21 @@ chrome.commands.onCommand.addListener(async (command) => {
             break;
 
         case 'improve-text':
-            const apiKey = await getGeminiApiKey();
-            if (!apiKey) {
-                console.error("API key missing");
+            const apiProvider = await getSelectedApiProvider();
+            const geminiApiKey = await getGeminiApiKey(); // Always try to get it for fallback
+
+            // Check API key only for Gemini as primary
+            if (apiProvider === 'gemini' && !geminiApiKey) {
+                console.error("Gemini API key missing");
+                chrome.notifications.create({
+                    type: 'basic',
+                    iconUrl: 'Icons/icon48.png',
+                    title: 'CodeSavvy - API Key Required',
+                    message: 'Please set your Gemini API key in the extension settings to use Gemini AI features.'
+                });
                 return;
             }
+
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 func: () => {
@@ -389,10 +508,11 @@ chrome.commands.onCommand.addListener(async (command) => {
                 const selectedText = results[0].result;
                 if (selectedText) {
                     const prompt = `Correct the spelling and grammar of the following text. Return plain text without any formatting or additional content. Text: "${selectedText}"`;
+
                     chrome.scripting.executeScript({
                         target: { tabId: tab.id },
                         func: enhanceTextWithAI,
-                        args: [apiKey, prompt]
+                        args: [apiProvider, geminiApiKey, prompt]
                     });
                 }
             }).catch((error) => {
@@ -404,5 +524,24 @@ chrome.commands.onCommand.addListener(async (command) => {
             await chrome.browsingData.remove({ since: 0 }, { cache: true });
             chrome.tabs.reload(tab.id);
             break;
+    }
+});
+
+// Handle notification messages
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'showNotification') {
+        chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'Icons/icon48.png',
+            title: 'CodeSavvy',
+            message: request.message
+        });
+    } else if (request.action === 'showFallbackNotification') {
+        chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'Icons/icon48.png',
+            title: 'CodeSavvy - API Fallback',
+            message: request.message
+        });
     }
 });
