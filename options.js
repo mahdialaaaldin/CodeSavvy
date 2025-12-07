@@ -1,9 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Load existing settings
-    chrome.storage.local.get(['geminiApiKey', 'vanriseMode', 'showQuote'], (result) => {
+    chrome.storage.local.get(['geminiApiKey', 'vanriseMode', 'showQuote', 'apiProvider'], (result) => {
         document.getElementById('apiKey').value = result.geminiApiKey || '';
         document.getElementById('vanriseMode').checked = result.vanriseMode || false;
         document.getElementById('showQuote').checked = result.showQuote !== undefined ? result.showQuote : true;
+        document.getElementById('apiProvider').value = result.apiProvider || 'gemini';
+
+        toggleApiKeyField(result.apiProvider || 'gemini');
+    });
+
+    // Show / hide API key field
+    function toggleApiKeyField(provider) {
+        const apiKeyField = document.getElementById('apiKey').parentNode.parentNode;
+        apiKeyField.style.display = provider === 'gemini' ? 'block' : 'none';
+    }
+
+    // Add listener for API provider change
+    document.getElementById('apiProvider').addEventListener('change', function (e) {
+        toggleApiKeyField(e.target.value);
     });
 
     // Toggle password visibility
@@ -34,11 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const apiKey = document.getElementById('apiKey').value.trim();
         const vanriseMode = document.getElementById('vanriseMode').checked;
         const showQuote = document.getElementById('showQuote').checked;
+        const apiProvider = document.getElementById('apiProvider').value;
 
         chrome.storage.local.set({
             geminiApiKey: apiKey,
             vanriseMode: vanriseMode,
-            showQuote: showQuote
+            showQuote: showQuote,
+            apiProvider: apiProvider
         }, () => {
             alert('Settings saved!');
             window.close();
