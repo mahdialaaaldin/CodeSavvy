@@ -117,7 +117,7 @@ async function getGeminiApiKey() {
 
 // AI text enhancement function
 async function enhanceTextWithAI(apiKey, prompt) {
-    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     async function getEnhancedText(textPrompt) {
         const response = await fetch(GEMINI_API_URL, {
