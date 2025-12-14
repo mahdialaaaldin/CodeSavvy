@@ -185,15 +185,37 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
             }
         }
 
-        enhancedText = enhancedText.trim();
+        function unescapeText(str) {
+            return str.replace(/\\([nrtbf"'\\])/g, (match, character) => {
+                switch (character) {
+                    case 'n': return "\n"; // New Line
+                    case 'r': return "\r"; // Carriage Return
+                    case 't': return "\t"; // Tab
+                    case 'b': return "\b"; // Backspace
+                    case 'f': return "\f"; // Form Feed
+                    case '"': return "\""; // Double Quote
+                    case "'": return "'";  // Single Quote
+                    case '\\': return "\\"; // Backslash
+                    default: return match;
+                }
+            });
+        }
+
+        enhancedText = unescapeText(enhancedText).trim();
 
         // Insert the enhanced text
         if (activeEl.tagName === "TEXTAREA" || activeEl.tagName === "INPUT") {
             const start = activeEl.selectionStart;
             const end = activeEl.selectionEnd;
+
+            // setRangeText handles real newline characters correctly
             activeEl.setRangeText(enhancedText, start, end, "end");
+
+            // Trigger an input event so frameworks (like React/Angular) or validation know the value changed
+            activeEl.dispatchEvent(new Event('input', { bubbles: true }));
         } else if (selection.rangeCount) {
             const range = selection.getRangeAt(0);
+            // For non-inputs, textNode will hold the formatting, but CSS (white-space: pre-wrap) determines if it renders visibly
             const enhancedNode = document.createTextNode(enhancedText);
             range.deleteContents();
             range.insertNode(enhancedNode);
