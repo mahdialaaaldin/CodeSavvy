@@ -95,7 +95,6 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
 
     // Helper function to get enhanced text from Pollinations
     async function getEnhancedTextFromPollinations(prompt) {
-        prompt += `Note that this prompt is sent to you at ${new Date().toLocaleString()}`;
         const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(prompt)}`;
         const response = await fetch(apiUrl);
 
@@ -201,21 +200,40 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
             });
         }
 
-        enhancedText = unescapeText(enhancedText).trim();
+        enhancedText = enhancedText.trim();
+        var unescapedText = unescapeText(enhancedText).trim()
 
-        // Insert the enhanced text
+        const activeEl = document.activeElement;
+        const selection = window.getSelection();
+
         if (activeEl.tagName === "TEXTAREA" || activeEl.tagName === "INPUT") {
+            // CASE 1: Standard Input fields
             const start = activeEl.selectionStart;
             const end = activeEl.selectionEnd;
+            activeEl.setRangeText(unescapedText, start, end, "end");
 
-            // setRangeText handles real newline characters correctly
-            activeEl.setRangeText(enhancedText, start, end, "end");
-
-            // Trigger an input event so frameworks (like React/Angular) or validation know the value changed
+            // Notify frameworks (React, Angular, etc.) that input changed
             activeEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+        } else if (activeEl.isContentEditable) {
+            // CASE 2: Rich Text Editors (ChatGPT, etc.)
+            activeEl.focus();
+
+            // 1. Safety First: Escape HTML characters (like < or >) so they don't break the page
+            let safeHtml = unescapedText
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            // 2. The Magic Fix: Turn Newlines (\n) into explicit Break tags (<br>)
+            safeHtml = safeHtml.replace(/\n/g, '<br>');
+
+            // 3. Force insert as HTML
+            document.execCommand('insertHTML', false, safeHtml);
+
         } else if (selection.rangeCount) {
+            // CASE 3: Fallback for static HTML text selection
             const range = selection.getRangeAt(0);
-            // For non-inputs, textNode will hold the formatting, but CSS (white-space: pre-wrap) determines if it renders visibly
             const enhancedNode = document.createTextNode(enhancedText);
             range.deleteContents();
             range.insertNode(enhancedNode);
