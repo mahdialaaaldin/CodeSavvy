@@ -108,8 +108,7 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
             throw new Error("Empty response from Pollinations");
         }
 
-        const adPattern = /---.*?Support Pollinations\.AI:.*?---.*?🌸 Ad 🌸.*?Powered by Pollinations\.AI free text APIs\. \[Support our mission\]\(https:\/\/pollinations\.ai\/redirect\/kofi\) to keep AI accessible for everyone\./gs;
-        return enhancedText.replace(adPattern, '').trim();
+        return enhancedText
     }
 
     const activeEl = document.activeElement;
