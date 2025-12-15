@@ -108,8 +108,10 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
             throw new Error("Empty response from Pollinations");
         }
 
-        return enhancedText;
+        const adPattern = /---.*?Support Pollinations\.AI:.*?---.*?🌸 Ad 🌸.*?Powered by Pollinations\.AI free text APIs\. \[Support our mission\]\(https:\/\/pollinations\.ai\/redirect\/kofi\) to keep AI accessible for everyone\./gs;
+        return enhancedText.replace(adPattern, '').trim();
     }
+
     const activeEl = document.activeElement;
     const selection = window.getSelection();
 
@@ -184,8 +186,12 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
             }
         }
 
-        function unescapeText(str) {
-            return str.replace(/\\([nrtbf"'\\])/g, (match, character) => {
+        // --- 1. Helper: Unescape & Normalize ---
+        function getCleanText(str) {
+            if (!str) return "";
+
+            // Unescape JSON symbols
+            let clean = str.replace(/\\([nrtbf"'\\])/g, (match, character) => {
                 switch (character) {
                     case 'n': return "\n"; // New Line
                     case 'r': return "\r"; // Carriage Return
@@ -198,45 +204,61 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
                     default: return match;
                 }
             });
+
+            // CRITICAL: Standardize newlines. 
+            // Windows uses \r\n, Mac uses \n. 
+            // We convert EVERYTHING to simple \n to avoid "double space" issues.
+            return clean.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
         }
 
-        enhancedText = enhancedText.trim();
-        var unescapedText = unescapeText(enhancedText).trim()
-
+        // --- 2. Main Logic ---
+        const cleanText = getCleanText(enhancedText);
         const activeEl = document.activeElement;
         const selection = window.getSelection();
 
         if (activeEl.tagName === "TEXTAREA" || activeEl.tagName === "INPUT") {
-            // CASE 1: Standard Input fields
+            // CASE 1: Standard Inputs
             const start = activeEl.selectionStart;
             const end = activeEl.selectionEnd;
-            activeEl.setRangeText(unescapedText, start, end, "end");
-
+            activeEl.setRangeText(cleanText, start, end, "end");
             // Notify frameworks (React, Angular, etc.) that input changed
             activeEl.dispatchEvent(new Event('input', { bubbles: true }));
 
         } else if (activeEl.isContentEditable) {
-            // CASE 2: Rich Text Editors (ChatGPT, etc.)
+            // CASE 2: Rich Text Editors (The tricky part)
             activeEl.focus();
 
-            // 1. Safety First: Escape HTML characters (like < or >) so they don't break the page
-            let safeHtml = unescapedText
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
+            // Check if this is the "Quill" editor (the one that broke with <br>)
+            const isQuill = activeEl.classList.contains('ql-editor');
 
-            // 2. The Magic Fix: Turn Newlines (\n) into explicit Break tags (<br>)
-            safeHtml = safeHtml.replace(/\n/g, '<br>');
-
-            // 3. Force insert as HTML
-            document.execCommand('insertHTML', false, safeHtml);
+            if (isQuill) {
+                // STRATEGY A: For Quill (and most modern editors)
+                // Quill listens for "text" events and handles the \n conversion internally.
+                // It strictly forbids <br> tags, so we MUST use insertText.
+                document.execCommand('insertText', false, cleanText);
+            } else {
+                // STRATEGY B: For ChatGPT / Others
+                // We try insertText first (it's the standard). 
+                document.execCommand('insertText', false, cleanText);
+            }
 
         } else if (selection.rangeCount) {
-            // CASE 3: Fallback for static HTML text selection
+            // CASE 3: Static HTML (Divs/Spans)
+            // Here we manually split lines to ensure they appear visually
             const range = selection.getRangeAt(0);
-            const enhancedNode = document.createTextNode(enhancedText);
             range.deleteContents();
-            range.insertNode(enhancedNode);
+
+            const fragment = document.createDocumentFragment();
+            const lines = cleanText.split('\n');
+
+            lines.forEach((line, index) => {
+                fragment.appendChild(document.createTextNode(line));
+                if (index < lines.length - 1) {
+                    fragment.appendChild(document.createElement('br'));
+                }
+            });
+
+            range.insertNode(fragment);
             selection.removeAllRanges();
         }
 
