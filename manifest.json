@@ -27,7 +27,8 @@
     "downloads"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+	  "https://text.pollinations.ai/*"
   ],
   "background": {
     "service_worker": "background.js"

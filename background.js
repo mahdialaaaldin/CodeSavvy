@@ -94,21 +94,21 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
     }
 
     // Helper function to get enhanced text from Pollinations
-    async function getEnhancedTextFromPollinations(prompt) {
-        const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(prompt)}`;
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-            throw new Error(`Pollinations API error (${response.status})`);
-        }
-
-        const enhancedText = await response.text();
-
-        if (!enhancedText || enhancedText.trim() === '') {
-            throw new Error("Empty response from Pollinations");
-        }
-
-        return enhancedText
+  async function getEnhancedTextFromPollinations(prompt) {
+        return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage(
+                { action: "fetchPollinations", prompt: prompt },
+                (response) => {
+                    if (chrome.runtime.lastError) {
+                        reject(new Error(chrome.runtime.lastError.message));
+                    } else if (response.error) {
+                        reject(new Error(response.error));
+                    } else {
+                        resolve(response.data);
+                    }
+                }
+            );
+        });
     }
 
     const activeEl = document.activeElement;
@@ -585,6 +585,20 @@ chrome.commands.onCommand.addListener(async (command) => {
             await chrome.browsingData.remove({ since: 0 }, { cache: true });
             chrome.tabs.reload(tab.id);
             break;
+    }
+});
+
+// Handle Pollinations API requests
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "fetchPollinations") {
+        const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(request.prompt)}`;
+
+        fetch(apiUrl)
+            .then(res => res.text())
+            .then(text => sendResponse({ data: text }))
+            .catch(err => sendResponse({ error: err.message }));
+
+        return true; // Keep the connection open for the async fetch
     }
 });
 
