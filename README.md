@@ -35,9 +35,27 @@ Context menu with AI-powered and traditional text transformations:
 
 ## **Preview**
 
-Below is a preview of the CodeSavvy extension interface:
+A quick look at **CodeSavvy** in action — from the main popup to the extension’s settings page.
 
-![image](https://github.com/user-attachments/assets/83c07683-213e-4646-9e9e-e9caae92e802)
+### 🔹 Extension Popup Interface
+The popup provides quick access to core tools, page actions, and AI-powered text features.
+
+<img
+  width="316"
+  height="375"
+  alt="CodeSavvy popup interface"
+  src="https://github.com/user-attachments/assets/8565ed86-7edc-41eb-9f1a-97c7c2bc1377"
+/>
+
+### ⚙️ Extension Options & Settings
+The options page allows configuration of API keys and advanced preferences.
+
+<img
+  width="444"
+  height="626"
+  alt="CodeSavvy extension settings page"
+  src="https://github.com/user-attachments/assets/a77282ea-c958-4b6b-8413-e8a7c684ecbc"
+/>
 
 ---
 
