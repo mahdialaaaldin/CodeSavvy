@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Load existing settings
-    chrome.storage.local.get(['geminiApiKey', 'vanriseMode', 'showQuote', 'apiProvider'], (result) => {
+    chrome.storage.local.get(['geminiApiKey', 'showQuote', 'apiProvider'], (result) => {
         document.getElementById('apiKey').value = result.geminiApiKey || '';
-        document.getElementById('vanriseMode').checked = result.vanriseMode || false;
         document.getElementById('showQuote').checked = result.showQuote !== undefined ? result.showQuote : true;
         document.getElementById('apiProvider').value = result.apiProvider || 'gemini';
 
@@ -46,13 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save settings
     document.getElementById('saveKey').addEventListener('click', () => {
         const apiKey = document.getElementById('apiKey').value.trim();
-        const vanriseMode = document.getElementById('vanriseMode').checked;
         const showQuote = document.getElementById('showQuote').checked;
         const apiProvider = document.getElementById('apiProvider').value;
 
         chrome.storage.local.set({
             geminiApiKey: apiKey,
-            vanriseMode: vanriseMode,
             showQuote: showQuote,
             apiProvider: apiProvider
         }, () => {

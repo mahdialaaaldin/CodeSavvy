@@ -12,7 +12,6 @@ A developer-focused browser extension for real-time web page manipulation, debug
 - **Reveal Passwords**: Show hidden password fields  
 - **Edit Mode**: Toggle `document.designMode` for content editing  
 - **Change Fonts**: Apply 30+ fonts to page content  
-- **Disable Loaders**: Hide loading indicators (Vanrise-specific)  
 - **AI-Powered Text Enhancements**: Leverage Gemini API for text improvements  
 
 ### **Utilities**
@@ -89,8 +88,7 @@ Configure settings via the extension’s options page:
 - Key is securely stored in `chrome.storage.local`  
 - Obtain a key from [Google AI Studio](https://aistudio.google.com/app/apikey)
 
-### 2. Advanced Settings
-- **Vanrise Mode**: Enable Vanrise-specific features (e.g., Disable Loaders)  
+### 2. Advanced Settings  
 - **Inspirational Quote**: Toggle motivational quote in popup  
   - Default: Enabled  
   - Fallback: _"Make it work, make it right, make it fast."_  

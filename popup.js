@@ -14,14 +14,6 @@ async function executeInTab(func, ...args) {
     }
 }
 
-async function checkVanriseMode() {
-    return new Promise(resolve => {
-        chrome.storage.local.get(['vanriseMode'], (result) => {
-            resolve(result.vanriseMode || false);
-        });
-    });
-}
-
 // Show notification in the extension
 function showNotification(message) {
     chrome.notifications.create({
@@ -45,11 +37,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         chrome.runtime.openOptionsPage();
     });
     document.body.appendChild(settingsBtn);
-
-    // Handle Vanrise Mode visibility
-    const vanriseModeEnabled = await checkVanriseMode();
-    const disableLoaderButton = document.getElementById('disableLoader');
-    disableLoaderButton.style.display = vanriseModeEnabled ? 'flex' : 'none';
 
     // Check quote setting
     const showQuote = await new Promise(resolve => {
@@ -77,9 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Update when settings change
     chrome.storage.onChanged.addListener((changes) => {
-        if (changes.vanriseMode) {
-            disableLoaderButton.style.display = changes.vanriseMode.newValue ? 'flex' : 'none';
-        }
         if (changes.showQuote) {
             if (changes.showQuote.newValue) {
                 quoteElement.style.display = "block";
@@ -118,21 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const toggleBtn = document.getElementById('designModeToggle');
         toggleBtn.classList.toggle('active', newState);
         toggleBtn.title = `Design mode ${newState ? 'ON' : 'OFF'}`;
-    });
-
-    document.getElementById('disableLoader').addEventListener('click', () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            let activeTabId = tabs[0].id;
-            chrome.scripting.executeScript({
-                target: { tabId: activeTabId },
-                func: () => {
-                    console.log("Loader")
-                    document.querySelectorAll('.divLoading').forEach(el => {
-                        el.classList.remove('divLoading');
-                    });
-                }
-            });
-        });
     });
 
     document.getElementById('clearCacheButton').addEventListener('click', () => {

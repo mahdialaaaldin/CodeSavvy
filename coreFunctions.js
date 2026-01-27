@@ -15,12 +15,6 @@ const CoreTools = {
         return document.designMode === 'on';
     },
 
-    disableLoaders: function () {
-        document.querySelectorAll('.divLoading').forEach(el => {
-            el.classList.remove('divLoading');
-        });
-    },
-
     clearCache: async function () {
         await chrome.browsingData.remove({ since: 0 }, { cache: true });
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
