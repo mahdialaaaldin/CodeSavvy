@@ -140,6 +140,11 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
                 console.warn(`Gemini API failed, ${geminiError.message}`);
             }
         }
+        
+        if (!enhancedText) {
+            console.log("API call failed, keeping original text");
+            return;
+        }
 
         // --- 1. Helper: Unescape & Normalize ---
         function getCleanText(str) {
