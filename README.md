@@ -23,10 +23,11 @@ A developer-focused browser extension for real-time web page manipulation, debug
 Context menu with AI-powered and traditional text transformations:
 - **AI Enhancements**:
   - **Improve Text**: Correct spelling and grammar  
-  - **Enhance Professionally**: Rephrase for formal, professional tone  
-  - **Add Humor**: Inject light-hearted jokes or puns  
   - **Advanced Improve Text**: Enhance clarity, fluency, and style  
-  - **Prompt Engineer**: Create optimized AI prompts  
+  - **Enhance Professionally**: Rephrase for formal, professional tone 
+  - **Prompt Engineer**: Create optimized AI prompts   
+  - **Add Humor**: Inject light-hearted jokes or puns  
+  - **Brutal Mode**: Rewrite text with extreme sarcasm and abrasive humor
 - **Text Transformations**:
   - **Case Conversions**: Sentence, lower, upper, capitalized, alternating, inverse, title, slugify  
   - **Highlight Text**: Apply yellow background (Beta)  
@@ -89,7 +90,7 @@ git clone https://github.com/mahdialaaaldin/CodeSavvy.git
 ### Context Menu Text Actions
 1. Select text > Right-click > **Text Actions**  
 2. Choose from:
-   - **AI Enhancements**: Improve Text, Enhance Professionally, Add Humor, Sarcastic Mode, Advanced Improve Text, Prompt Engineer  
+   - **AI Enhancements**: Improve Text, Enhance Professionally, Add Humor, Brutal Mode, Advanced Improve Text, Prompt Engineer  
    - **Case Transformations**: Sentence, Lower, Upper, Capitalized, Alternating, Inverse, Title, Slugify 
    - **Text Transformations**: Convert Arabic to English (Beta), Convert English to Arabic (Beta) 
    - **Highlight Text**: Apply yellow highlight (Beta)  
@@ -192,7 +193,7 @@ No part of this project may be used, copied, modified, or distributed without ex
 
 ## **Third-Party Assets**
 
-Icons sourced from FormWeb via Flaticon. Unauthorized use may result in legal action.
+Icons sourced from FormWeb via Flaticon.
 
 ---
 

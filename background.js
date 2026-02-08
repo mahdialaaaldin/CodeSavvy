@@ -8,11 +8,11 @@ chrome.contextMenus.create({
 // Define all menu options (AI enhancements and other text actions)
 const menuOptions = [
     { id: "improveText", title: "Improve Text" },
-    { id: "enhanceProfessionally", title: "Enhance Professionally" },
-    { id: "addHumor", title: "Add Humor" },
-    { id: "sarcasticMode", title: "Sarcastic Mode" },
-    { id: "promptEngineer", title: "Prompt Engineer" },
     { id: "advancedImproveText", title: "Advanced Improve Text" },
+    { id: "enhanceProfessionally", title: "Enhance Professionally" },
+    { id: "promptEngineer", title: "Prompt Engineer" },
+    { id: "addHumor", title: "Add Humor" },
+    { id: "brutalMode", title: "Brutal Mode" },
     { id: "separator_ai_tools", type: "separator" },
     { id: "sentenceCase", title: "Sentence case" },
     { id: "lowerCase", title: "lower case" },
@@ -140,7 +140,7 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
                 console.warn(`Gemini API failed, ${geminiError.message}`);
             }
         }
-        
+
         if (!enhancedText) {
             console.log("API call failed, keeping original text");
             return;
@@ -416,7 +416,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
             target: { tabId: tab.id },
             func: highlightSelectedText,
         });
-    } else if (["improveText", "enhanceProfessionally", "addHumor", "sarcasticMode", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
+    } else if (["improveText", "enhanceProfessionally", "addHumor", "brutalMode", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
         const apiProvider = await getSelectedApiProvider();
         const geminiApiKey = apiProvider === 'gemini' ? await getGeminiApiKey() : await getGeminiApiKey(); // Always try to get it for fallback
 
@@ -438,17 +438,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
             case "improveText":
                 prompt = `Correct the spelling and grammar of the following text. Return plain text without any formatting or additional content. Text: "${info.selectionText}"`;
                 break;
-            case "enhanceProfessionally":
-                prompt = `Rephrase the following text to sound more professional and formal. Return plain text without any formatting. Text: "${info.selectionText}"`;
-                break;
-            case "addHumor":
-                prompt = `Rewrite the following text to be hilariously funny and witty, incorporating clever wordplay, absurd twists, and light-hearted humor while preserving the original meaning. Keep it playful and family-friendly. Return only the funny version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
-                break;
-            case "sarcasticMode":
-                prompt = `Rewrite the following text to be extremely rude and offensive, incorporating profanity, bad words, and aggressive insults liberally while preserving the original meaning. Make it as insulting and crude as possible. Return only the rude version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
-                break;
             case "advancedImproveText":
                 prompt = `Act as a professional English editor. Improve the following text by correcting spelling, grammar, and punctuation, and enhancing clarity, flow, and readability. Do not add comments or explanations. Return only the edited text as plain text. Text: "${info.selectionText}"`;
+                break;
+            case "enhanceProfessionally":
+                prompt = `Rephrase the following text to sound more professional and formal. Return plain text without any formatting. Text: "${info.selectionText}"`;
                 break;
             case "promptEngineer":
                 prompt = `You are an expert prompt creator. Your task is to craft an optimized prompt based on the user-provided input for use with ChatGPT, GPT-3, or GPT-4. The output prompt should:
@@ -458,6 +452,12 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
                     - Avoid ambiguity and ensure actionable instructions.
                     Input text: "${info.selectionText}"
                     Return only the optimized prompt as plain text.`;
+                break;
+            case "addHumor":
+                prompt = `Rewrite the following text to be hilariously funny and witty, incorporating clever wordplay, absurd twists, and light-hearted humor while preserving the original meaning. Keep it playful and family-friendly. Return only the funny version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
+                break;
+            case "brutalMode":
+                prompt = `Rewrite the following text to be extremely rude and offensive, incorporating profanity, bad words, and aggressive insults liberally while preserving the original meaning. Make it as insulting and crude as possible. Return only the rude version as plain text, with no additional formatting or comments. Text: "${info.selectionText}"`;
                 break;
         }
 
