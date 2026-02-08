@@ -17,29 +17,12 @@ async function getSelectedApiProvider() {
 async function getQuote() {
     const apiProvider = await getSelectedApiProvider();
 
-    if (apiProvider === 'pollinations') {
-        try {
-            return await getQuoteFromPollinations();
-        } catch (pollinationsError) {
-            console.warn(`Pollinations quote failed: ${pollinationsError.message}, trying Gemini...`);
-            try {
-                return await getQuoteFromGemini();
-            } catch (geminiError) {
-                console.warn(`Gemini quote also failed: ${geminiError.message}, using fallback`);
-                return getRandomFallback();
-            }
-        }
-    } else {
+    if (apiProvider === 'gemini') {
         try {
             return await getQuoteFromGemini();
         } catch (geminiError) {
-            console.warn(`Gemini quote failed: ${geminiError.message}, trying Pollinations...`);
-            try {
-                return await getQuoteFromPollinations();
-            } catch (pollinationsError) {
-                console.warn(`Pollinations quote also failed: ${pollinationsError.message}, using fallback`);
-                return getRandomFallback();
-            }
+            console.warn(`Gemini quote failed: ${geminiError.message}`);
+           return getRandomFallback();
         }
     }
 }
@@ -114,45 +97,6 @@ async function getQuoteFromGemini() {
         return cleanedText;
     } catch (error) {
         console.error("Error fetching quote from Gemini:", error);
-        throw error; // Re-throw so caller can handle fallback
-    }
-}
-
-async function getQuoteFromPollinations() {
-    try {
-        const topics = [
-            'programming', 'debugging', 'software architecture', 'code maintenance',
-            'teamwork in tech', 'algorithms', 'clean code', 'technical debt',
-            'innovation', 'AI development', 'open source', 'testing',
-            'career growth', 'legacy systems', 'documentation'
-        ];
-
-        const angles = [
-            'motivational', 'humorous', 'philosophical', 'practical',
-            'controversial', 'historical', 'futuristic', 'minimalist'
-        ];
-
-        const randomTopic = topics[Math.floor(Math.random() * topics.length)];
-        const randomAngle = angles[Math.floor(Math.random() * angles.length)];
-
-        const prompt = `Generate a short, inspiring quote (max 15 words) for developers about ${randomTopic} in a ${randomAngle} tone. Include a programming metaphor or tech reference. Note that this prompt is sent to you at ${new Date().toLocaleString()}`;
-
-        const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
-
-        if (!response.ok) {
-            throw new Error(`Pollinations API Error: ${response.status}`);
-        }
-
-        const text = await response.text();
-        const cleanedText = text.trim().replace(/["']/g, '').replace(/-.*$/, '').trim();
-
-        if (!cleanedText || cleanedText === '') {
-            throw new Error("Empty response from Pollinations");
-        }
-
-        return cleanedText;
-    } catch (error) {
-        console.error("Error fetching quote from Pollinations:", error);
         throw error; // Re-throw so caller can handle fallback
     }
 }

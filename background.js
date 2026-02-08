@@ -93,24 +93,6 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
         return enhancedText;
     }
 
-    // Helper function to get enhanced text from Pollinations
-  async function getEnhancedTextFromPollinations(prompt) {
-        return new Promise((resolve, reject) => {
-            chrome.runtime.sendMessage(
-                { action: "fetchPollinations", prompt: prompt },
-                (response) => {
-                    if (chrome.runtime.lastError) {
-                        reject(new Error(chrome.runtime.lastError.message));
-                    } else if (response.error) {
-                        reject(new Error(response.error));
-                    } else {
-                        resolve(response.data);
-                    }
-                }
-            );
-        });
-    }
-
     const activeEl = document.activeElement;
     const selection = window.getSelection();
 
@@ -155,33 +137,7 @@ async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
                 enhancedText = await getEnhancedTextFromGemini(geminiApiKey, prompt);
                 console.log(`Successfully used Gemini API`);
             } catch (geminiError) {
-                console.warn(`Gemini API failed, falling back to Pollinations: ${geminiError.message}`);
-                // Fall back to Pollinations
-                enhancedText = await getEnhancedTextFromPollinations(prompt);
-                usedProvider = 'pollinations (fallback)';
-                errorMessage = `Gemini failed: ${geminiError.message}. Using Pollinations instead.`;
-            }
-        } else {
-            // Primary provider is Pollinations
-            try {
-                enhancedText = await getEnhancedTextFromPollinations(prompt);
-                console.log(`Successfully used Pollinations API`);
-            } catch (pollinationsError) {
-                console.warn(`Pollinations API failed, falling back to Gemini: ${pollinationsError.message}`);
-                // Fall back to Gemini if we have a key
-                if (geminiApiKey) {
-                    try {
-                        enhancedText = await getEnhancedTextFromGemini(geminiApiKey, prompt);
-                        usedProvider = 'gemini (fallback)';
-                        errorMessage = `Pollinations failed: ${pollinationsError.message}. Using Gemini instead.`;
-                    } catch (geminiError) {
-                        // Both failed
-                        throw new Error(`Both APIs failed: Pollinations - ${pollinationsError.message}, Gemini - ${geminiError.message}`);
-                    }
-                } else {
-                    // No Gemini key, can't fall back
-                    throw pollinationsError;
-                }
+                console.warn(`Gemini API failed, ${geminiError.message}`);
             }
         }
 
@@ -585,20 +541,6 @@ chrome.commands.onCommand.addListener(async (command) => {
             await chrome.browsingData.remove({ since: 0 }, { cache: true });
             chrome.tabs.reload(tab.id);
             break;
-    }
-});
-
-// Handle Pollinations API requests
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "fetchPollinations") {
-        const apiUrl = `https://text.pollinations.ai/${encodeURIComponent(request.prompt)}`;
-
-        fetch(apiUrl)
-            .then(res => res.text())
-            .then(text => sendResponse({ data: text }))
-            .catch(err => sendResponse({ error: err.message }));
-
-        return true; // Keep the connection open for the async fetch
     }
 });
 

@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load existing settings
     chrome.storage.local.get(['geminiApiKey', 'showQuote', 'apiProvider'], (result) => {
         document.getElementById('apiKey').value = result.geminiApiKey || '';
-        document.getElementById('showQuote').checked = result.showQuote !== undefined ? result.showQuote : true;
+        document.getElementById('showQuote').checked = result.showQuote !== undefined ? result.showQuote : false;
         document.getElementById('apiProvider').value = result.apiProvider || 'gemini';
 
         toggleApiKeyField(result.apiProvider || 'gemini');
