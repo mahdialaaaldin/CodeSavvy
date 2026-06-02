@@ -33,8 +33,6 @@ async function getQuoteFromGemini() {
         throw new Error("No Gemini API key found");
     }
 
-    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
     try {
         const topics = [
             'programming', 'debugging', 'software architecture', 'code maintenance',
@@ -70,31 +68,99 @@ async function getQuoteFromGemini() {
             - Surprising combination
             - Add emoji at end if appropriate`;
 
-        const response = await fetch(GEMINI_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                    temperature: 0.9,
-                    maxOutputTokens: 100
+        const models = [
+            "gemini-3.1-flash-lite",
+            "gemini-2.5-flash-lite",
+            "gemini-2.5-flash",
+            "gemini-3-flash-preview",
+            "gemini-2.5-pro",
+            "gemini-3.1-pro-preview"
+        ];
+
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+                temperature: 0.9,
+                maxOutputTokens: 100
+            }
+        };
+
+        const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+        async function tryModel(model) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            for (let attempt = 1; attempt <= 2; attempt++) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        const status = response.status;
+                        const msg = errData.error?.message || `HTTP ${status}`;
+
+                        const retryable = status === 429 || status >= 500;
+
+                        if (attempt === 1 && retryable) {
+                            await sleep(1000 * attempt);
+                            continue;
+                        }
+
+                        throw new Error(`${model} failed (${status}): ${msg}`);
+                    }
+
+                    const data = await response.json();
+                    const cleanedText = cleanResponse(data);
+
+                    if (!cleanedText) {
+                        throw new Error(`Empty response from ${model}`);
+                    }
+
+                    return cleanedText;
+
+                } catch (err) {
+                    clearTimeout(timeoutId);
+
+                    if (err.message.includes("failed (")) {
+                        throw err;
+                    }
+
+                    const isLastAttempt = attempt === 2;
+
+                    if (err.name === 'AbortError') {
+                        console.warn(`${model} timed out on attempt ${attempt}`);
+                    }
+
+                    if (!isLastAttempt) {
+                        await sleep(1000 * attempt);
+                        continue;
+                    }
+                    throw err;
                 }
-            }),
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+            }
         }
 
-        const data = await response.json();
-        const cleanedText = cleanResponse(data);
-
-        if (!cleanedText) {
-            throw new Error("Empty response from Gemini");
+        let lastError;
+        for (const model of models) {
+            try {
+                return await tryModel(model);
+            } catch (err) {
+                console.warn(`Quote Fallback - ${err.message}`);
+                lastError = err;
+            }
         }
-
-        return cleanedText;
+        
+        throw new Error(`All Gemini models failed. Last error: ${lastError?.message}`);
     } catch (error) {
         console.error("Error fetching quote from Gemini:", error);
         throw error; // Re-throw so caller can handle fallback

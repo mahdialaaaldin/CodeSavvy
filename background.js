@@ -1,4 +1,4 @@
-﻿importScripts('coreFunctions.js');
+﻿﻿importScripts('coreFunctions.js');
 chrome.contextMenus.create({
     id: "textActions",
     title: "Text Actions",
@@ -67,30 +67,97 @@ async function getGeminiApiKey() {
 async function enhanceTextWithAI(primaryApiProvider, geminiApiKey, prompt) {
     // Helper function to get enhanced text from Gemini
     async function getEnhancedTextFromGemini(apiKey, prompt) {
-        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const models = [
+            "gemini-3.1-flash-lite",
+            "gemini-2.5-flash-lite",
+            "gemini-2.5-flash",
+            "gemini-3-flash-preview",
+            "gemini-2.5-pro",
+            "gemini-3.1-pro-preview"
+        ];
 
-        const response = await fetch(GEMINI_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.7 }
-            }),
-        });
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.7 }
+        };
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+        const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+        async function tryModel(model) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            console.log(`Calling Gemini model: ${model}`);
+            for (let attempt = 1; attempt <= 2; attempt++) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        const errData = await response.json().catch(() => ({}));
+                        const status = response.status;
+                        const msg = errData.error?.message || `HTTP ${status}`;
+
+                        // Only retry on rate limits (429) or transient server issues (5xx)
+                        const retryable = status === 429 || status >= 500;
+
+                        if (attempt === 1 && retryable) {
+                            await sleep(1000 * attempt);
+                            continue;
+                        }
+
+                        // Throw immediately on non-retryable errors (e.g. 400, 403)
+                        throw new Error(`${model} failed (${status}): ${msg}`);
+                    }
+
+                    const data = await response.json();
+                    const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+                    if (!resultText) throw new Error(`Empty response from ${model}`);
+
+                    return resultText;
+
+                } catch (err) {
+                    clearTimeout(timeoutId);
+                    
+                    // Do not retry locally if it's our explicit non-retryable error
+                    if (err.message.includes("failed (")) {
+                        throw err; 
+                    }
+
+                    const isLastAttempt = attempt === 2;
+
+                    if (err.name === 'AbortError') {
+                        console.warn(`${model} timed out on attempt ${attempt}`);
+                    }
+
+                    if (!isLastAttempt) {
+                        await sleep(1000 * attempt);
+                        continue;
+                    }
+                    throw err;
+                }
+            }
         }
 
-        const data = await response.json();
-        const enhancedText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-        if (!enhancedText) {
-            throw new Error("No enhanced text received from Gemini");
+        let lastError;
+        for (const model of models) {
+            try {
+                return await tryModel(model);
+            } catch (err) {
+                console.warn(`Fallback - ${err.message}`);
+                lastError = err;
+            }
         }
 
-        return enhancedText;
+        throw new Error(`All Gemini models failed. Last error: ${lastError?.message}`);
     }
 
     const activeEl = document.activeElement;
