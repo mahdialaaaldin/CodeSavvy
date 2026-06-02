@@ -25,14 +25,41 @@ function showNotification(message) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Add settings gear icon
+    // Add settings gear icon (Modern SVG)
     const settingsBtn = document.createElement('div');
-    settingsBtn.innerHTML = '⚙️';
-    settingsBtn.style.position = 'absolute';
-    settingsBtn.style.top = '10px';
-    settingsBtn.style.right = '10px';
-    settingsBtn.style.cursor = 'pointer';
+    settingsBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+    `;
+    
+    // Style the settings button to match the modern theme
+    Object.assign(settingsBtn.style, {
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        cursor: 'pointer',
+        color: 'var(--text-light)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: '10'
+    });
+    
     settingsBtn.title = 'Settings';
+    
+    // Add hover effects for interactivity
+    settingsBtn.addEventListener('mouseenter', () => {
+        settingsBtn.style.color = 'var(--primary)';
+        settingsBtn.style.transform = 'rotate(45deg) scale(1.1)';
+    });
+    settingsBtn.addEventListener('mouseleave', () => {
+        settingsBtn.style.color = 'var(--text-light)';
+        settingsBtn.style.transform = 'rotate(0deg) scale(1)';
+    });
+
     settingsBtn.addEventListener('click', () => {
         chrome.runtime.openOptionsPage();
     });
@@ -66,7 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.storage.onChanged.addListener((changes) => {
         if (changes.showQuote) {
             if (changes.showQuote.newValue) {
-                quoteElement.style.display = "block";
+                quoteSection.style.display = "block";
                 getQuote()
                     .then(quote => {
                         quoteElement.innerText = `${quote}`;
@@ -74,10 +101,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .catch(error => {
                         console.error("Error fetching quote:", error);
                         quoteElement.innerText = `"Make it work, make it right, make it fast"`;
-                        quoteElement.style.display = "block";
+                        quoteSection.style.display = "block";
                     });
             } else {
-                quoteElement.style.display = "none";
+                quoteSection.style.display = "none";
             }
         }
     });
