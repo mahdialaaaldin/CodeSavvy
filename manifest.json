@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "CodeSavvy Pro",
-  "version": "1.1",
+  "name": "CodeSavvy",
+  "version": "2.0",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCsTeRKuxevWiein7geQszhb8mHRpLByZbXX8tR0m1GPBkN8SN9xgo7NijAYAqa3H5rGuDmNZm2k7UzdlVfC5+gO6uf/rVOPx7kHJNQBQaBuWUEd4KHLWa3jOy+mllD72TwXNdtJJdX6TWf115SGHlLzZRg7S47dke6KTZI6O8gcQIDAQAB",
   "description": "Developer toolbox with advanced web manipulation tools. Unlock elements, modify text, change fonts, and more.",
   "action": {
     "default_popup": "popup.html",

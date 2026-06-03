@@ -1,13 +1,13 @@
 // Helper function to execute scripts in active tab
-async function executeInTab(func, ...args) {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+async function executeInTab (func, ...args) {
+    const [ tab ] = await chrome.tabs.query({ active: true, currentWindow: true });
     try {
         const result = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func,
             args
         });
-        return result[0].result;
+        return result[ 0 ].result;
     } catch (error) {
         console.error('Extension error:', error);
         //showNotification(`Error: ${error.message}`);
@@ -15,7 +15,7 @@ async function executeInTab(func, ...args) {
 }
 
 // Show notification in the extension
-function showNotification(message) {
+function showNotification (message) {
     chrome.notifications.create({
         type: 'basic',
         iconUrl: 'Icons/icon48.png',
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
     `;
-    
+
     // Style the settings button to match the modern theme
     Object.assign(settingsBtn.style, {
         position: 'absolute',
@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         justifyContent: 'center',
         zIndex: '10'
     });
-    
+
     settingsBtn.title = 'Settings';
-    
+
     // Add hover effects for interactivity
     settingsBtn.addEventListener('mouseenter', () => {
         settingsBtn.style.color = 'var(--primary)';
@@ -67,8 +67,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check quote setting
     const showQuote = await new Promise(resolve => {
-        chrome.storage.local.get(['showQuote'], (result) => {
-            resolve(result.showQuote !== undefined ? result.showQuote : true);
+        chrome.storage.local.get([ 'showQuote' ], (result) => {
+            resolve(result.showQuote != undefined ? result.showQuote : false);
         });
     });
 
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Reload the current tab
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                chrome.tabs.reload(tabs[0].id);
+                chrome.tabs.reload(tabs[ 0 ].id);
             });
             setTimeout(() => window.close(), 500);
         });
@@ -183,20 +183,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (systemFonts.includes(selectedFont)) {
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 chrome.scripting.executeScript({
-                    target: { tabId: tabs[0].id },
+                    target: { tabId: tabs[ 0 ].id },
                     func: (font) => {
                         document.querySelectorAll('*:not(code):not(pre):not([class*="code"])').forEach(element => {
                             element.style.fontFamily = font;
                         });
                     },
-                    args: [selectedFont]
+                    args: [ selectedFont ]
                 });
             });
         } else {
             // If the font is a Google Font, load it and apply it
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 chrome.scripting.executeScript({
-                    target: { tabId: tabs[0].id },
+                    target: { tabId: tabs[ 0 ].id },
                     func: (font, fontUrl) => {
                         let link = document.querySelector(`link[href="${fontUrl}"]`);
                         if (!link) {
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             element.style.fontFamily = font;
                         });
                     },
-                    args: [selectedFont, googleFontsUrl[selectedFont]]
+                    args: [ selectedFont, googleFontsUrl[ selectedFont ] ]
                 });
                 fontModal.style.display = 'none';
             });
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Utility handlers
     const buttonActions = {
         screenshotButton: async () => {
-            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            const [ tab ] = await chrome.tabs.query({ active: true, currentWindow: true });
             const dataUrl = await chrome.tabs.captureVisibleTab();
             chrome.downloads.download({
                 url: dataUrl,
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         })
     };
 
-    Object.entries(buttonActions).forEach(([id, action]) => {
+    Object.entries(buttonActions).forEach(([ id, action ]) => {
         document.getElementById(id)?.addEventListener('click', action);
     });
 });
@@ -246,7 +246,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.status === 'complete') updateDesignModeState();
 });
 
-async function updateDesignModeState() {
+async function updateDesignModeState () {
     const isDesignModeOn = await executeInTab(() => document.designMode === 'on');
     document.getElementById('designModeToggle')?.classList.toggle('active', isDesignModeOn);
 }

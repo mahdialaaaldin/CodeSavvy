@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Load existing settings
-    chrome.storage.local.get(['geminiApiKey', 'showQuote', 'apiProvider'], (result) => {
+    chrome.storage.local.get([ 'geminiApiKey', 'showQuote', 'apiProvider' ], (result) => {
         document.getElementById('apiKey').value = result.geminiApiKey || '';
         document.getElementById('showQuote').checked = result.showQuote !== undefined ? result.showQuote : false;
         document.getElementById('apiProvider').value = result.apiProvider || 'gemini';
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Show / hide API key field
-    function toggleApiKeyField(provider) {
+    function toggleApiKeyField (provider) {
         const apiKeyField = document.getElementById('apiKey').parentNode.parentNode;
         apiKeyField.style.display = provider === 'gemini' ? 'block' : 'none';
     }
