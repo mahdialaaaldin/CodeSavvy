@@ -27,10 +27,10 @@ Context menu with AI-powered and traditional text transformations:
   - **Enhance Professionally**: Rephrase for formal, professional tone 
   - **Prompt Engineer**: Create optimized AI prompts   
   - **Add Humor**: Inject light-hearted jokes or puns  
-  - **Brutal Mode**: Rewrite text with extreme sarcasm and abrasive humor
+  - **Roasted Mode**: Rewrite text with a brutally honest, highly sarcastic, and witty mock developer roast
 - **Text Transformations**:
   - **Case Conversions**: Sentence, lower, upper, capitalized, alternating, inverse, title, slugify  
-  - **Highlight Text**: Apply yellow background (Beta)  
+  - **Highlight Text**: Apply yellow background  
 
 ---
 
@@ -90,10 +90,10 @@ git clone https://github.com/mahdialaaaldin/CodeSavvy.git
 ### Context Menu Text Actions
 1. Select text > Right-click > **Text Actions**  
 2. Choose from:
-   - **AI Enhancements**: Improve Text, Enhance Professionally, Add Humor, Brutal Mode, Advanced Improve Text, Prompt Engineer  
+   - **AI Enhancements**: Improve Text, Enhance Professionally, Add Humor, Roasted Mode, Advanced Improve Text, Prompt Engineer  
    - **Case Transformations**: Sentence, Lower, Upper, Capitalized, Alternating, Inverse, Title, Slugify 
    - **Text Transformations**: Convert Arabic to English (Beta), Convert English to Arabic (Beta) 
-   - **Highlight Text**: Apply yellow highlight (Beta)  
+   - **Highlight Text**: Apply yellow highlight  
 
 ---
 

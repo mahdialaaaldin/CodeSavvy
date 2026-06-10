@@ -17,7 +17,7 @@ const CoreTools = {
 
     clearCache: async function () {
         await chrome.browsingData.remove({ since: 0 }, { cache: true });
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const [ tab ] = await chrome.tabs.query({ active: true, currentWindow: true });
         chrome.tabs.reload(tab.id);
     }
 };
