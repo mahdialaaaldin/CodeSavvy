@@ -1,203 +1,179 @@
-# **CodeSavvy Extension** <img src="Icons/ai-logo.gif" width="24" height="24" align="center" alt="Animated logo">
+# **CodeSavvy Extension** <img src="src/assets/icons/Icons/icon48.png" width="32" height="32" align="center" alt="CodeSavvy logo">
 
-A developer-focused browser extension for real-time web page manipulation, debugging, and AI-powered text enhancements.
+[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-v2.0-blue.svg?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/codesavvy/jenendhnlcnokliclhccikgeohdgfhml)
+[![Manifest Version](https://img.shields.io/badge/Manifest-V3-emerald.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
+[![License](https://img.shields.io/badge/License-All_Rights_Reserved-red.svg)](#license)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](#contributing)
 
----
-
-## **Features**
-
-### **Core Tools**
-- **Unlock Elements**: Remove `disabled` attributes and classes  
-- **Remove Input Limits**: Delete `maxlength` restrictions  
-- **Reveal Passwords**: Show hidden password fields  
-- **Edit Mode**: Toggle `document.designMode` for content editing  
-- **Change Fonts**: Apply 30+ fonts to page content  
-- **AI-Powered Text Enhancements**: Leverage Gemini API for text improvements  
-
-### **Utilities**
-- **Clear Cache**: One-click cache cleanup with auto-reload  
-- **Screenshot**: Capture visible page area  
-- **Fullscreen**: Enter fullscreen mode  
-
-### **Text Actions** (Right-click menu)
-Context menu with AI-powered and traditional text transformations:
-- **AI Enhancements**:
-  - **Improve Text**: Correct spelling and grammar  
-  - **Advanced Improve Text**: Enhance clarity, fluency, and style  
-  - **Enhance Professionally**: Rephrase for formal, professional tone 
-  - **Prompt Engineer**: Create optimized AI prompts   
-  - **Add Humor**: Inject light-hearted jokes or puns  
-  - **Roasted Mode**: Rewrite text with a brutally honest, highly sarcastic, and witty mock developer roast
-- **Text Transformations**:
-  - **Case Conversions**: Sentence, lower, upper, capitalized, alternating, inverse, title, slugify  
-  - **Highlight Text**: Apply yellow background  
+A developer-focused browser extension for real-time web page manipulation, DOM debugging, and AI-powered text enhancement. Take control of any webpage, bypass restrictions, and boost your text-editing productivity with local AI integrations.
 
 ---
 
-## **Preview**
+## 🚀 **Key Features**
 
-A quick look at **CodeSavvy** in action — from the main popup to the extension’s settings page.
+### 🛠️ **Core Web Manipulation Tools**
+*   **Unlock Elements**: Instantly remove `disabled`, `readonly`, and `aria-disabled` attributes from buttons, inputs, and form controls.
+*   **Remove Input Limits**: Delete `maxlength` restrictions on any text field with a single click.
+*   **Reveal Passwords**: Safely convert input password fields into plain readable text for debugging.
+*   **Toggle Edit Mode**: Enable `document.designMode` to freely edit any webpage content on the fly.
+*   **Change Fonts**: Instantly apply over 15+ clean Google Fonts (e.g., Poppins, Lexend, Montserrat) and system typography to the page.
+
+### 🤖 **AI-Powered Text Actions (Google Gemini API)**
+Right-click on any selected text to trigger context-aware AI text actions:
+*   **Improve Text**: Clean up spelling, punctuation, and grammar mistakes.
+*   **Advanced Improve Text**: Enhance readability, clarity, and overall phrasing.
+*   **Enhance Professionally**: Rephrase selected text into a formal, corporate tone.
+*   **Prompt Engineer**: Refactor rough drafts into optimized prompts for LLMs.
+*   **Add Humor**: Inject light-hearted jokes, puns, or witty references.
+*   **Roasted Mode**: Rewrite text with a witty, highly sarcastic, and mock-developer roast.
+
+### 📋 **Text Case Transformations**
+Instantly convert selection case via the right-click context menu:
+*   Convert text casing seamlessly across plain paragraphs, inputs, and textareas.
+*   Supported conversions: Sentence case, Lowercase, Uppercase, Capitalized Case, Alternating Case, Inverse Case, Title Case, and Slugify.
+
+### ⚡ **Productivity Utilities**
+*   **Clear Cache**: Empty your browser cache and reload the active tab instantly to fetch the latest code version.
+*   **Screenshot Utility**: Capture the visible area of the active tab and save it as a high-quality PNG.
+*   **Fullscreen Mode**: Expand the webpage to full screen for presentations, testing, or mockups.
+
+---
+
+## 📸 **Preview**
+
+A look at **CodeSavvy** in action — from the main popup interface to the extension’s options page.
 
 ### 🔹 Extension Popup Interface
-The popup provides quick access to core tools, page actions, and AI-powered text features.
+The popup provides quick access to core utilities, page actions, and typography options.
 
-<img
-  width="316"
-  height="375"
-  alt="CodeSavvy popup interface"
-  src="https://github.com/user-attachments/assets/8565ed86-7edc-41eb-9f1a-97c7c2bc1377"
-/>
+<p align="left">
+  <img width="362" height="448" alt="CodeSavvy Popup" src="https://github.com/user-attachments/assets/0b8b92fd-218e-401d-95cf-3a084b2528bf" />
+</p>
 
 ### ⚙️ Extension Options & Settings
-The options page allows configuration of API keys and advanced preferences.
+The options page allows you to configure API keys, toggle popup features, and manage preferences.
 
-<img
-  width="444"
-  height="626"
-  alt="CodeSavvy extension settings page"
-  src="https://github.com/user-attachments/assets/a77282ea-c958-4b6b-8413-e8a7c684ecbc"
-/>
+<p align="left">
+  <img width="610" height="626" alt="CodeSavvy Options" src="https://github.com/user-attachments/assets/59d3387c-61fc-45d4-9147-5def14991a3d" />
+</p>
 
 ---
 
-## **Installation**
+## 📦 **Installation**
 
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/mahdialaaaldin/CodeSavvy.git
 ```
 
-### 2. Load the Extension
-1. Open Chrome and navigate to `chrome://extensions/`  
-2. Enable **Developer mode** (top-right corner)  
-3. Click **Load unpacked** and select the project folder  
+### 2. Load the Extension in Chrome
+1. Open Google Chrome and navigate to `chrome://extensions/`.
+2. Toggle **Developer mode** in the top-right corner.
+3. Click **Load unpacked** in the top-left.
+4. Select the project root folder (`CodeSavvy`) containing your `manifest.json`.
 
 ---
 
-## **Usage**
+## ⚙️ **Options & API Setup**
 
-### Popup Tools
-- **Unlock Elements**: Enable editing of disabled elements  
-- **Unlimited MaxLength**: Remove input character limits  
-- **Toggle Design Mode**: Edit page content directly  
-- **Take Screenshot**: Save visible tab as an image  
-- **Make Page Full Screen**: Expand webpage to fullscreen  
-- **Reveal Passwords**: Display password fields as text  
-- **Change Font**: Choose from 30+ Google Fonts  
-- **Clear Cache**: Clear cache and reload page  
-- **AI Text Enhancements**: Require a valid Gemini API key  
+Configure settings via the extension’s options page (click the gear icon ⚙️ in the popup):
 
-### Context Menu Text Actions
-1. Select text > Right-click > **Text Actions**  
-2. Choose from:
-   - **AI Enhancements**: Improve Text, Enhance Professionally, Add Humor, Roasted Mode, Advanced Improve Text, Prompt Engineer  
-   - **Case Transformations**: Sentence, Lower, Upper, Capitalized, Alternating, Inverse, Title, Slugify 
-   - **Text Transformations**: Convert Arabic to English (Beta), Convert English to Arabic (Beta) 
-   - **Highlight Text**: Apply yellow highlight  
+1.  **API Key Configuration**
+    *   Enter your **Google Gemini API Key** to enable the AI text enhancement features.
+    *   Keys are stored securely in local browser storage and sent directly to Google endpoints.
+    *   Get a free key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2.  **Advanced Settings**
+    *   **Inspirational Quote**: Toggle the motivational quote displayed at the bottom of the popup interface. (Default: *Enabled*).
 
 ---
 
-## **Options & API Setup**
+## ⌨️ **Keyboard Shortcuts**
 
-Configure settings via the extension’s options page:
+Quickly trigger core functions using keyboard combinations.
 
-### 1. API Key Configuration
-- Access settings via the ⚙️ icon  
-- Enter your **Gemini API Key** for AI-powered text enhancements  
-- Key is securely stored in `chrome.storage.local`  
-- Obtain a key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl + Shift + E` | Unlock webpage elements |
+| `Ctrl + Shift + Y` | Toggle Page Edit Mode (`designMode`) |
+| `Ctrl + Shift + L` | Improve selected text using Gemini AI |
+| `Ctrl + Shift + R` | Clear cache and reload active tab |
 
-### 2. Advanced Settings  
-- **Inspirational Quote**: Toggle motivational quote in popup  
-  - Default: Enabled  
-  - Fallback: _"Make it work, make it right, make it fast."_  
-
-### 3. Save Settings
-- Click **Save Settings** to persist changes  
+> [!TIP]
+> You can customize these shortcuts at any time by visiting `chrome://extensions/shortcuts` in Google Chrome.
 
 ---
 
-## **Keyboard Shortcuts**
+## 📁 **File Structure**
 
-| Shortcut          | Action                          |
-|-------------------|---------------------------------|
-| `Ctrl+Shift+E`    | Unlock elements                 |
-| `Ctrl+Shift+Y`    | Toggle edit mode                |
-| `Ctrl+Shift+L`    | Improve selected text (AI)      |
-| `Ctrl+Shift+R`    | Clear cache and reload          |
-
-### **Customize Shortcuts**
-1. Go to `chrome://extensions/shortcuts`  
-2. Locate **CodeSavvy** and edit key combinations  
-3. Changes apply immediately  
-
-**Note**: Shortcuts may conflict with browser defaults; customize as needed.
-
----
-
-## **File Structure**
+This project is organized as follows:
 
 ```
 CodeSavvy/
-├── popup.html        # Main interface
-├── popup.js          # UI functionality
-├── apiService.js     # Gemini API interactions
-├── background.js     # Context menu and command handlers
-├── coreFunctions.js  # Core logic
-├── manifest.json     # Extension configuration
-├── options.html      # Settings page
-├── options.js        # Settings management
-├── Icons/            # Visual assets
-│   ├── icon16.png
-│   ├── icon48.png
-│   ├── icon128.png
-│   └── ...other icons
-└── README.md         # Documentation
+├── manifest.json         # Extension configuration (Manifest V3)
+├── PRIVACY_POLICY.md     # Offline Markdown Privacy Policy
+├── privacy.html          # Public Privacy Policy webpage (GitHub Pages)
+├── README.md             # Documentation (This file)
+└── src/                  # Source Code
+    ├── assets/
+    │   └── icons/        # Visual icons & assets
+    ├── background/
+    │   └── background.js # Extension background service worker
+    ├── options/
+    │   ├── options.html  # Options page interface
+    │   └── options.js    # Options logic & storage management
+    ├── popup/
+    │   ├── popup.html    # Main popup layout
+    │   └── popup.js      # Main popup interactive logic
+    └── shared/           # Common utilities and functions
 ```
 
 ---
 
-## **Permissions**
+## 🔒 **Security & Privacy**
 
-- `activeTab`: Modify current webpage  
-- `scripting`: Inject content scripts  
-- `storage`: Store API key and settings  
-- `contextMenus`: Provide text action menu  
-- `browsingData`: Enable cache clearing  
-- `notifications`: Display status messages  
+We believe in strict user data privacy and data minimization.
+*   **No Remote Code**: The extension executes 100% locally bundled code, in compliance with Chrome Web Store MV3 guidelines.
+*   **Direct API Calls**: Your Gemini API Key is stored safely on your browser profile via `chrome.storage.local`. When utilizing AI features, selected text is sent directly to Google Gemini API endpoints without routing through any intermediary developer servers.
+*   **No Tracking**: We do not collect, store, or sell any of your personal details, browsing history, or website activities.
 
----
-
-## **Technical Notes**
-- **API Key Storage**: Secured in `chrome.storage.local`  
-- **Theme Support**: Adapts to system dark/light mode  
-- **Fallback Quote**: _"Make it work, make it right, make it fast."_  
-- **Code Organization**: Core logic centralized in `coreFunctions.js`  
+For a detailed review of our privacy practices, read our [PRIVACY_POLICY.md](PRIVACY_POLICY.md) or visit our publicly hosted [Privacy Policy Page](privacy.html).
 
 ---
 
-## **Contributing**
-1. Fork the repository  
-2. Create a feature branch (`feature/your-feature`)  
-3. Submit a pull request  
+## 🛠️ **Required Permissions**
+
+CodeSavvy requests the following permissions for operational purposes:
+
+*   `activeTab`: Required to interact with and edit the tab currently in focus.
+*   `scripting`: Used to inject styling scripts (changing fonts, unlocking elements) into the page.
+*   `storage`: Necessary to store your option choices and API key securely on your device.
+*   `tabs`: Utilized to capture screenshots and perform tab refreshes securely.
+*   `browsingData`: Used to programmatically clear browser cache upon request.
+*   `contextMenus`: Required to register right-click options for text manipulations.
+*   `notifications`: Displays minor completion alerts for background tasks.
+*   `downloads`: Enables the screenshot tool to save files directly to your device.
 
 ---
 
-## **License**
+## 🤝 **Contributing**
 
-Copyright © 2025 mahdialaaaldin.  
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/your-feature`).
+3. Commit your changes (`git commit -m "feat: add some feature"`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Open a Pull Request.
+
+---
+
+## 📄 **License**
+
+Copyright © 2025-2026 mahdialaaaldin.  
 All rights reserved.  
-No part of this project may be used, copied, modified, or distributed without explicit written permission.
+No part of this project may be used, copied, modified, or distributed without explicit written permission from the owner.
 
 ---
 
-## **Third-Party Assets**
+## 📬 **Contact**
 
-Icons sourced from FormWeb via Flaticon.
-
----
-
-## **Contact**
-
-For inquiries or feedback:  
-**[mahdialaaaldin+codesavvy@gmail.com](mailto:mahdialaaaldin+codesavvy@gmail.com)**
+For bug reports, questions, or general feedback, reach out via:
+*   **Email**: [mahdialaaaldin+codesavvy@gmail.com](mailto:mahdialaaaldin+codesavvy@gmail.com)
