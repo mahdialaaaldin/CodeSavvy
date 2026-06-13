@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSavvy Settings</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Modern vibrant palette */
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --secondary-glow: rgba(16, 185, 129, 0.25);
+
+            --text: #0f172a;
+            --text-light: #64748b;
+            --text-muted: #94a3b8;
+            --bg: #f8fafc;
+            --bg-elevated: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border: rgba(148, 163, 184, 0.2);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 20px var(--primary-glow);
+
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text: #f1f5f9;
+                --text-light: #94a3b8;
+                --text-muted: #64748b;
+                --bg: #0f172a;
+                --bg-elevated: #1e293b;
+                --card-bg: rgba(30, 41, 59, 0.6);
+                --border: rgba(148, 163, 184, 0.1);
+                --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+                --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+                --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #e0e7ff 50%, var(--bg) 100%);
+            background-size: 200% 200%;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px 20px;
+            overflow-x: hidden;
+            position: relative;
+            animation: gradientShift 15s ease infinite;
+            width: 100%;
+            min-width: 600px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, var(--bg) 0%, #1e1b4b 50%, var(--bg) 100%);
+                background-size: 200% 200%;
+            }
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Ambient background orbs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%;
+            right: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -10%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--secondary-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 12s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+        }
+
+        /* Main Container - Increased Width */
+        .settings-container {
+            width: 100%;
+            max-width: 2000px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Glassmorphic Sections */
+        .settings-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .settings-section:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .settings-section:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .settings-section:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .settings-section__title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .settings-section__title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
+        }
+
+        .form-control {
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Inputs */
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', 'Inter', monospace;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: var(--bg-elevated);
+        }
+
+        /* Specific style for Select to match Popup */
+        select.input-field {
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .visibility-toggle {
+            position: absolute;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visibility-toggle:hover {
+            color: var(--primary);
+            background-color: var(--primary-glow);
+        }
+
+        /* Modern CSS-only Toggle Switch for the Checkbox */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            user-select: none;
+            margin-bottom: 8px;
+        }
+
+        .toggle-input {
+            display: none;
+        }
+
+        .toggle-track {
+            width: 44px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-input:checked+.toggle-track {
+            background: var(--secondary);
+            box-shadow: 0 0 12px var(--secondary-glow);
+        }
+
+        .toggle-input:checked+.toggle-track .toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        .toggle-text {
+            font-weight: 500;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        /* Action Button */
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            transition-duration: 0.1s;
+        }
+
+        /* Utilities */
+        .text-help {
+            font-size: 12px;
+            color: var(--text-light);
+            margin: 8px 0 0;
+            line-height: 1.5;
+        }
+
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .link:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="settings-container">
+        <section class="settings-section">
+            <h2 class="settings-section__title">API Configuration</h2>
+            <div class="form-control">
+                <div class="input-container">
+                    <input type="password" class="input-field" id="apiKey" placeholder="Enter your Gemini API key"
+                        aria-label="Gemini API key">
+                    <button type="button" id="toggleVisibility" class="visibility-toggle" aria-label="Show API key">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-help">
+                    Get your API key securely from
+                    <a href="https://aistudio.google.com/app/apikey" class="link" target="_blank"
+                        rel="noopener noreferrer">
+                        Google AI Studio
+                    </a>
+                </p>
+            </div>
+
+            <div class="form-control">
+                <label
+                    style="display:block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: var(--text-light);">API
+                    Provider</label>
+                <select class="input-field" id="apiProvider" aria-label="Select AI API provider">
+                    <option value="gemini">Google Gemini AI</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="settings-section">
+            <h2 class="settings-section__title">Preferences</h2>
+
+            <label class="toggle-container" for="showQuote">
+                <input type="checkbox" class="toggle-input" id="showQuote" aria-describedby="quoteHelp" checked>
+                <div class="toggle-track">
+                    <div class="toggle-thumb"></div>
+                </div>
+                <span class="toggle-text">Show inspirational quote</span>
+            </label>
+            <p class="text-help" id="quoteHelp" style="margin-left: 58px;">
+                Displays a motivational quote at the bottom of the extension popup.
+            </p>
+        </section>
+
+        <section class="settings-section"
+            style="padding: 16px; background: transparent; border: none; box-shadow: none;">
+            <button class="btn-primary" id="saveKey">Save Settings</button>
+        </section>
+    </div>
+
+    <!-- Core Options Logic -->
+    <script src="options.js"></script>
+</body>
+
+</html>
