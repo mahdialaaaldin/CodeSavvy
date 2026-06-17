@@ -3,17 +3,17 @@
   "name": "CodeSavvy",
   "version": "2.0",
   "icons": {
-    "16": "src/assets/icons/Icons/icon16.png",
-    "48": "src/assets/icons/Icons/icon48.png",
-    "128": "src/assets/icons/Icons/icon128.png"
+    "16": "src/assets/icons/icon16.png",
+    "48": "src/assets/icons/icon48.png",
+    "128": "src/assets/icons/icon128.png"
   },
   "description": "Developer toolbox with advanced web manipulation tools. Unlock elements, modify text, change fonts, and more.",
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_icon": {
-      "16": "src/assets/icons/Icons/icon16.png",
-      "48": "src/assets/icons/Icons/icon48.png",
-      "128": "src/assets/icons/Icons/icon128.png"
+      "16": "src/assets/icons/icon16.png",
+      "48": "src/assets/icons/icon48.png",
+      "128": "src/assets/icons/icon128.png"
     }
   },
   "permissions": [

@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodeSavvy - Privacy Policy</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="src/assets/icons/Icons/icon16.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="src/assets/icons/Icons/icon48.png">
-    <link rel="icon" type="image/png" sizes="128x128" href="src/assets/icons/Icons/icon128.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="16x16" href="src/assets/icons/icon16.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="src/assets/icons/icon48.png">
+    <link rel="icon" type="image/png" sizes="128x128" href="src/assets/icons/icon128.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
@@ -57,7 +60,7 @@
             margin: 0;
             overflow-x: hidden;
             position: relative;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 100% 0%, var(--primary-glow) 0%, transparent 40%),
                 radial-gradient(circle at 0% 100%, var(--secondary-glow) 0%, transparent 40%);
             background-attachment: fixed;
@@ -324,8 +327,13 @@
 
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideUp {
@@ -333,6 +341,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -343,9 +352,11 @@
             .hero h1 {
                 font-size: 28px;
             }
+
             .content-section {
                 padding: 24px;
             }
+
             .permission-item {
                 flex-direction: column;
                 gap: 8px;
@@ -353,6 +364,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -400,7 +412,8 @@
         <section class="hero">
             <h1>Privacy Policy</h1>
             <p style="font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-                CodeSavvy is committed to providing a secure, lightweight, and private browsing experience. Read on to learn how we protect your information.
+                CodeSavvy is committed to providing a secure, lightweight, and private browsing experience. Read on to
+                learn how we protect your information.
             </p>
         </section>
 
@@ -414,7 +427,8 @@
                     </svg>
                 </div>
                 <h3>Privacy First</h3>
-                <p>We do not collect, store, or transmit your personal data, browser history, or activities to any remote servers.</p>
+                <p>We do not collect, store, or transmit your personal data, browser history, or activities to any
+                    remote servers.</p>
             </div>
             <div class="highlight-card">
                 <div class="highlight-icon">
@@ -426,98 +440,132 @@
                     </svg>
                 </div>
                 <h3>100% Local Storage</h3>
-                <p>Your settings and Gemini API key are kept strictly on your local browser profile. No cloud sync is used.</p>
+                <p>Your settings and Gemini API key are kept strictly on your local browser profile. No cloud sync is
+                    used.</p>
             </div>
         </section>
 
         <!-- Main Content -->
         <div class="content-section">
             <h2>
-                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
                 1. Data Collection & Usage
             </h2>
             <p>
                 CodeSavvy acts purely as a local utility extension. We believe in absolute transparency:
             </p>
             <p>
-                <strong>Settings & Gemini API Key:</strong> All customizable settings, quotes toggles, and API keys are stored on your local device using the Chrome Storage API (<code>chrome.storage.local</code>). This data stays isolated within your browser's extension sandbox and is never uploaded to the developer.
+                <strong>Settings & Gemini API Key:</strong> All customizable settings, quotes toggles, and API keys are
+                stored on your local device using the Chrome Storage API (<code>chrome.storage.local</code>). This data
+                stays isolated within your browser's extension sandbox and is never uploaded to the developer.
             </p>
             <p>
-                <strong>AI Text Enhancement:</strong> When you select text and use the context menu to run Gemini-powered enhancements, the extension uses your provided API Key to communicate directly with Google's API servers. No intermediary servers are involved, and we do not see or retain your text.
+                <strong>AI Text Enhancement:</strong> When you select text and use the context menu to run
+                Gemini-powered enhancements, the extension uses your provided API Key to communicate directly with
+                Google's API servers. No intermediary servers are involved, and we do not see or retain your text.
             </p>
         </div>
 
         <div class="content-section">
             <h2>
-                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
                 2. Permissions Justification
             </h2>
             <p>
-                In compliance with Google's Single Purpose policy and data minimization guidelines, CodeSavvy requests the following permissions for operational purposes:
+                In compliance with Google's Single Purpose policy and data minimization guidelines, CodeSavvy requests
+                the following permissions for operational purposes:
             </p>
             <div class="permissions-list">
                 <div class="permission-item">
                     <span class="permission-badge">activeTab</span>
-                    <span class="permission-desc">Required to apply modifications (like font changes, design mode editing, and input unlocking) exclusively to the active webpage you are currently viewing.</span>
+                    <span class="permission-desc">Required to apply modifications (like font changes, design mode
+                        editing, and input unlocking) exclusively to the active webpage you are currently
+                        viewing.</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-badge">scripting</span>
-                    <span class="permission-desc">Enables the extension to inject code to change font styling, unlock disabled inputs, and remove character length restrictions.</span>
+                    <span class="permission-desc">Enables the extension to inject code to change font styling, unlock
+                        disabled inputs, and remove character length restrictions.</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-badge">storage</span>
-                    <span class="permission-desc">Used to save and retrieve your custom API key and option selections securely on your local device.</span>
+                    <span class="permission-desc">Used to save and retrieve your custom API key and option selections
+                        securely on your local device.</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-badge">tabs</span>
-                    <span class="permission-desc">Needed to identify active tabs in order to trigger the cache clearing reloads and screenshots securely.</span>
+                    <span class="permission-desc">Needed to identify active tabs in order to trigger the cache clearing
+                        reloads and screenshots securely.</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-badge">browsingData</span>
-                    <span class="permission-desc">Used to clear local cache files when utilizing the "Clear Cache" button.</span>
+                    <span class="permission-desc">Used to clear local cache files when utilizing the "Clear Cache"
+                        button.</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-badge">contextMenus</span>
-                    <span class="permission-desc">Allows the registration of right-click context menu options to enable rapid text transformations (case conversions and AI adjustments).</span>
+                    <span class="permission-desc">Allows the registration of right-click context menu options to enable
+                        rapid text transformations (case conversions and AI adjustments).</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-badge">notifications</span>
-                    <span class="permission-desc">Displays minor non-intrusive alerts when background operations complete (e.g. confirming cache clear).</span>
+                    <span class="permission-desc">Displays minor non-intrusive alerts when background operations
+                        complete (e.g. confirming cache clear).</span>
                 </div>
                 <div class="permission-item">
                     <span class="permission-badge">downloads</span>
-                    <span class="permission-desc">Allows you to instantly download captured webpage screenshots directly to your computer.</span>
+                    <span class="permission-desc">Allows you to instantly download captured webpage screenshots directly
+                        to your computer.</span>
                 </div>
             </div>
         </div>
 
         <div class="content-section">
             <h2>
-                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                    </path>
+                </svg>
                 3. Third Party Services
             </h2>
             <p>
-                The extension interacts directly with <strong>Google Gemini API</strong> endpoints to provide AI text enhancements. By using these features, you agree to Google's terms. Please consult the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a> for information on their data retention policies.
+                The extension interacts directly with <strong>Google Gemini API</strong> endpoints to provide AI text
+                enhancements. By using these features, you agree to Google's terms. Please consult the <a
+                    href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy
+                    Policy</a> for information on their data retention policies.
             </p>
         </div>
 
         <div class="content-section">
             <h2>
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
                 4. Policy Updates & Contact
             </h2>
             <p>
-                We may revise this privacy policy from time to time. The updated document will always be available at this address. For any questions, suggestions, or concerns regarding your privacy:
+                We may revise this privacy policy from time to time. The updated document will always be available at
+                this address. For any questions, suggestions, or concerns regarding your privacy:
             </p>
             <p style="margin-bottom: 0;">
-                ✉️ Reach out via email: <a href="mailto:mahdialaaaldin+codesavvy@gmail.com"><strong>mahdialaaaldin+codesavvy@gmail.com</strong></a>
+                ✉️ Reach out via email: <a
+                    href="mailto:mahdialaaaldin+codesavvy@gmail.com"><strong>mahdialaaaldin+codesavvy@gmail.com</strong></a>
             </p>
         </div>
 
         <!-- Footer -->
         <footer>
-            <p>&copy; 2026 CodeSavvy. All rights reserved. Created by <a href="https://github.com/mahdialaaaldin" target="_blank" rel="noopener noreferrer">mahdialaaaldin</a>.</p>
+            <p>&copy; 2026 CodeSavvy. All rights reserved. Created by <a href="https://github.com/mahdialaaaldin"
+                    target="_blank" rel="noopener noreferrer">mahdialaaaldin</a>.</p>
         </footer>
     </div>
 </body>
+
 </html>

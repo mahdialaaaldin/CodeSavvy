@@ -1,13 +1,13 @@
 // Helper function to execute scripts in active tab
-async function executeInTab (func, ...args) {
-    const [ tab ] = await chrome.tabs.query({ active: true, currentWindow: true });
+async function executeInTab(func, ...args) {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     try {
         const result = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func,
             args
         });
-        return result[ 0 ].result;
+        return result[0].result;
     } catch (error) {
         console.error('Extension error:', error);
         //showNotification(`Error: ${error.message}`);
@@ -15,10 +15,10 @@ async function executeInTab (func, ...args) {
 }
 
 // Show notification in the extension
-function showNotification (message) {
+function showNotification(message) {
     chrome.notifications.create({
         type: 'basic',
-        iconUrl: '/src/assets/icons/Icons/icon48.png',
+        iconUrl: '/src/assets/icons/icon48.png',
         title: 'CodeSavvy',
         message
     });
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check quote setting
     const showQuote = await new Promise(resolve => {
-        chrome.storage.local.get([ 'showQuote' ], (result) => {
+        chrome.storage.local.get(['showQuote'], (result) => {
             resolve(result.showQuote != undefined ? result.showQuote : false);
         });
     });
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Reload the current tab
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                chrome.tabs.reload(tabs[ 0 ].id);
+                chrome.tabs.reload(tabs[0].id);
             });
             setTimeout(() => window.close(), 500);
         });
@@ -194,20 +194,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (systemFonts.includes(selectedFont)) {
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 chrome.scripting.executeScript({
-                    target: { tabId: tabs[ 0 ].id },
+                    target: { tabId: tabs[0].id },
                     func: (font) => {
                         document.querySelectorAll('*:not(code):not(pre):not([class*="code"])').forEach(element => {
                             element.style.fontFamily = font;
                         });
                     },
-                    args: [ selectedFont ]
+                    args: [selectedFont]
                 });
             });
         } else {
             // If the font is a Google Font, load it and apply it
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 chrome.scripting.executeScript({
-                    target: { tabId: tabs[ 0 ].id },
+                    target: { tabId: tabs[0].id },
                     func: (font, fontUrl) => {
                         let link = document.querySelector(`link[href="${fontUrl}"]`);
                         if (!link) {
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             element.style.fontFamily = font;
                         });
                     },
-                    args: [ selectedFont, googleFontsUrl[ selectedFont ] ]
+                    args: [selectedFont, googleFontsUrl[selectedFont]]
                 });
                 fontModal.style.display = 'none';
             });
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Utility handlers
     const buttonActions = {
         screenshotButton: async () => {
-            const [ tab ] = await chrome.tabs.query({ active: true, currentWindow: true });
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             const dataUrl = await chrome.tabs.captureVisibleTab();
             chrome.downloads.download({
                 url: dataUrl,
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         })
     };
 
-    Object.entries(buttonActions).forEach(([ id, action ]) => {
+    Object.entries(buttonActions).forEach(([id, action]) => {
         document.getElementById(id)?.addEventListener('click', action);
     });
 });
@@ -257,7 +257,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.status === 'complete') updateDesignModeState();
 });
 
-async function updateDesignModeState () {
+async function updateDesignModeState() {
     const isDesignModeOn = await executeInTab(() => document.designMode === 'on');
     document.getElementById('designModeToggle')?.classList.toggle('active', isDesignModeOn);
 }

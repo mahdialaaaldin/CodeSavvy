@@ -27,14 +27,14 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "textActions",
         title: "Text Actions",
-        contexts: [ "selection" ],
+        contexts: ["selection"],
     });
 
     menuOptions.forEach((action) => {
         const menuItem = {
             id: action.id,
             parentId: "textActions",
-            contexts: [ "selection" ]
+            contexts: ["selection"]
         };
 
         if (action.type === "separator") {
@@ -48,25 +48,25 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Helper function to get selected API provider
-async function getSelectedApiProvider () {
+async function getSelectedApiProvider() {
     return new Promise((resolve) => {
-        chrome.storage.local.get([ 'apiProvider' ], (result) => {
+        chrome.storage.local.get(['apiProvider'], (result) => {
             resolve(result.apiProvider || 'gemini');
         });
     });
 }
 
 // Fetch API key from storage
-async function getGeminiApiKey () {
+async function getGeminiApiKey() {
     return new Promise((resolve) => {
-        chrome.storage.local.get([ 'geminiApiKey' ], (result) => {
+        chrome.storage.local.get(['geminiApiKey'], (result) => {
             resolve(result.geminiApiKey || null);
         });
     });
 }
 
 // AI text enhancement function with dual API support and automatic fallback
-async function getEnhancedTextFromGemini (apiKey, prompt) {
+async function getEnhancedTextFromGemini(apiKey, prompt) {
     const models = [
         "gemini-3.1-flash-lite",
         "gemini-2.5-flash-lite",
@@ -77,13 +77,13 @@ async function getEnhancedTextFromGemini (apiKey, prompt) {
     ];
 
     const payload = {
-        contents: [ { parts: [ { text: prompt } ] } ],
+        contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0.7 }
     };
 
     const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
-    async function tryModel (model) {
+    async function tryModel(model) {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         console.log(`Calling Gemini model: ${model}`);
         for (let attempt = 1; attempt <= 2; attempt++) {
@@ -118,7 +118,7 @@ async function getEnhancedTextFromGemini (apiKey, prompt) {
                 }
 
                 const data = await response.json();
-                const resultText = data?.candidates?.[ 0 ]?.content?.parts?.[ 0 ]?.text?.trim();
+                const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
                 if (!resultText) throw new Error(`Empty response from ${model}`);
 
@@ -160,7 +160,7 @@ async function getEnhancedTextFromGemini (apiKey, prompt) {
     throw new Error(`All Gemini models failed. Last error: ${lastError?.message}`);
 }
 
-function getCleanText (str) {
+function getCleanText(str) {
     if (!str) return "";
 
     // Unescape JSON symbols
@@ -213,7 +213,7 @@ function getSelectedTextFromPage() {
     return textToEnhance;
 }
 
-function insertTextInPage (cleanText) {
+function insertTextInPage(cleanText) {
     const activeEl = document.activeElement;
     const selection = window.getSelection();
 
@@ -272,7 +272,7 @@ async function handleTextEnhancement(tab, promptId, infoSelectionText) {
         console.error("Gemini API key is missing.");
         chrome.notifications.create({
             type: 'basic',
-            iconUrl: '/src/assets/icons/Icons/icon48.png',
+            iconUrl: '/src/assets/icons/icon48.png',
             title: 'CodeSavvy - API Key Required',
             message: 'Please set your Gemini API key in the extension settings to use Gemini AI features.'
         });
@@ -337,14 +337,14 @@ async function handleTextEnhancement(tab, promptId, infoSelectionText) {
         await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: insertTextInPage,
-            args: [ cleanText ]
+            args: [cleanText]
         });
 
     } catch (error) {
         console.error("AI text enhancement failed:", error);
         showNotificationHelper({
             type: 'basic',
-            iconUrl: '/src/assets/icons/Icons/icon48.png',
+            iconUrl: '/src/assets/icons/icon48.png',
             title: 'CodeSavvy - Error',
             message: `AI enhancement failed: ${error.message}`
         });
@@ -353,7 +353,7 @@ async function handleTextEnhancement(tab, promptId, infoSelectionText) {
 
 
 // Highlight selected text function
-function highlightSelectedText () {
+function highlightSelectedText() {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
@@ -388,9 +388,9 @@ function highlightSelectedText () {
     textNodes.forEach(node => {
         const start = (node === range.startContainer) ? range.startOffset : 0;
         const end = (node === range.endContainer) ? range.endOffset : node.nodeValue.length;
-        
+
         if (start === end) return; // Empty selection in this node
-        
+
         let highlightNode;
         if (start > 0 && end < node.nodeValue.length) {
             const part2 = node.splitText(start);
@@ -409,7 +409,7 @@ function highlightSelectedText () {
         span.style.backgroundColor = 'yellow';
         span.style.color = 'black';
         span.className = 'codesavvy-highlight';
-        
+
         highlightNode.parentNode.insertBefore(span, highlightNode);
         span.appendChild(highlightNode);
     });
@@ -418,9 +418,9 @@ function highlightSelectedText () {
 }
 
 // Case conversion function
-function convertCase (caseType) {
+function convertCase(caseType) {
     const activeEl = document.activeElement;
-    
+
     // 1. Handle selection inside inputs/textareas
     if (
         activeEl &&
@@ -502,7 +502,7 @@ function convertCase (caseType) {
             case 'titleCase':
                 return text.toLowerCase().split(' ')
                     .map((word, index) => {
-                        const smallWords = [ 'a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet' ];
+                        const smallWords = ['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'in', 'nor', 'of', 'on', 'or', 'so', 'the', 'to', 'up', 'yet'];
                         if (index > 0 && smallWords.includes(word)) return word;
                         return word.charAt(0).toUpperCase() + word.slice(1);
                     })
@@ -513,7 +513,7 @@ function convertCase (caseType) {
                     .replace(/[^\w\s-]/g, '') // Remove special characters
                     .replace(/\s+/g, '-')     // Replace spaces with hyphens
                     .replace(/-+/g, '-');     // Remove consecutive hyphens
-            
+
             default:
                 return text;
         }
@@ -524,9 +524,9 @@ function convertCase (caseType) {
     textNodes.forEach(node => {
         const start = (node === range.startContainer) ? range.startOffset : 0;
         const end = (node === range.endContainer) ? range.endOffset : node.nodeValue.length;
-        
+
         if (start === end) return; // Empty selection in this node
-        
+
         let targetNode;
         if (start > 0 && end < node.nodeValue.length) {
             const part2 = node.splitText(start);
@@ -549,18 +549,18 @@ function convertCase (caseType) {
     selection.removeAllRanges();
 }
 
-function convertKeyboardLayoutInSelection (direction, selectedText) {
+function convertKeyboardLayoutInSelection(direction, selectedText) {
     // Define keyboard layout conversion maps
     const englishToArabicMap = { '`': 'ذ', 'q': 'ض', 'w': 'ص', 'e': 'ث', 'r': 'ق', 't': 'ف', 'y': 'غ', 'u': 'ع', 'i': 'ه', 'o': 'خ', 'p': 'ح', '[': 'ج', ']': 'د', 'a': 'ش', 's': 'س', 'd': 'ي', 'f': 'ب', 'g': 'ل', 'h': 'ا', 'j': 'ت', 'k': 'ن', 'l': 'م', ';': 'ك', "'": 'ط', 'z': 'ئ', 'x': 'ء', 'c': 'ؤ', 'v': 'ر', 'b': 'لا', 'n': 'ى', 'm': 'ة', ',': 'و', '.': 'ز', '/': 'ظ' };
     const arabicToEnglishMap = { 'ذ': '`', 'ض': 'q', 'ص': 'w', 'ث': 'e', 'ق': 'r', 'ف': 't', 'غ': 'y', 'ع': 'u', 'ه': 'i', 'خ': 'o', 'ح': 'p', 'ج': '[', 'د': ']', 'ش': 'a', 'س': 's', 'ي': 'd', 'ب': 'f', 'ل': 'g', 'ا': 'h', 'ت': 'j', 'ن': 'k', 'm': 'l', 'ك': ';', 'ط': "'", 'ئ': 'z', 'ء': 'x', 'ؤ': 'c', 'ر': 'v', 'لا': 'b', 'ى': 'n', 'ة': 'm', 'و': ',', 'ز': '.', 'ظ': '/' };
 
     const activeEl = document.activeElement;
-    
-    function convertKeyboardLayout (text, direction) {
+
+    function convertKeyboardLayout(text, direction) {
         const map = direction === 'arabic-to-english' ? arabicToEnglishMap : englishToArabicMap;
         let output = '';
         for (let char of text) {
-            output += map[ char ] || char;
+            output += map[char] || char;
         }
         return output;
     }
@@ -618,9 +618,9 @@ function convertKeyboardLayoutInSelection (direction, selectedText) {
     textNodes.forEach(node => {
         const start = (node === range.startContainer) ? range.startOffset : 0;
         const end = (node === range.endContainer) ? range.endOffset : node.nodeValue.length;
-        
+
         if (start === end) return; // Empty selection in this node
-        
+
         let targetNode;
         if (start > 0 && end < node.nodeValue.length) {
             const part2 = node.splitText(start);
@@ -656,27 +656,27 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
             target: { tabId: tab.id },
             func: highlightSelectedText,
         });
-    } else if ([ "improveText", "enhanceProfessionally", "addHumor", "brutalMode", "advancedImproveText", "promptEngineer" ].includes(info.menuItemId)) {
+    } else if (["improveText", "enhanceProfessionally", "addHumor", "brutalMode", "advancedImproveText", "promptEngineer"].includes(info.menuItemId)) {
         await handleTextEnhancement(tab, info.menuItemId, info.selectionText);
-    } else if ([ "convertArabicToEnglish", "convertEnglishToArabic" ].includes(info.menuItemId)) {
+    } else if (["convertArabicToEnglish", "convertEnglishToArabic"].includes(info.menuItemId)) {
         const direction = info.menuItemId === "convertArabicToEnglish" ? "arabic-to-english" : "english-to-arabic";
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: convertKeyboardLayoutInSelection,
-            args: [ direction, info.selectionText ],
+            args: [direction, info.selectionText],
         });
     } else {
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: convertCase,
-            args: [ info.menuItemId ],
+            args: [info.menuItemId],
         });
     }
 });
 
 // Handle keyboard commands
 chrome.commands.onCommand.addListener(async (command) => {
-    const [ tab ] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     switch (command) {
         case 'unlock-elements':
@@ -709,14 +709,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'showNotification') {
         showNotificationHelper({
             type: 'basic',
-            iconUrl: '/src/assets/icons/Icons/icon48.png',
+            iconUrl: '/src/assets/icons/icon48.png',
             title: 'CodeSavvy',
             message: request.message
         });
     } else if (request.action === 'showFallbackNotification') {
         showNotificationHelper({
             type: 'basic',
-            iconUrl: '/src/assets/icons/Icons/icon48.png',
+            iconUrl: '/src/assets/icons/icon48.png',
             title: 'CodeSavvy - API Fallback',
             message: request.message
         });

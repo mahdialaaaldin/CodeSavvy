@@ -1,4 +1,4 @@
-# **CodeSavvy Extension** <img src="src/assets/icons/Icons/icon48.png" width="32" height="32" align="center" alt="CodeSavvy logo">
+# **CodeSavvy Extension** <img src="src/assets/icons/icon48.png" width="32" height="32" align="center" alt="CodeSavvy logo">
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-v2.0-blue.svg?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/codesavvy/jenendhnlcnokliclhccikgeohdgfhml)
 [![Manifest Version](https://img.shields.io/badge/Manifest-V3-emerald.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
