@@ -362,8 +362,13 @@ function highlightSelectedText () {
 
     function getTextNodesInRange(range) {
         const textNodes = [];
+        const root = range.commonAncestorContainer;
+        if (root.nodeType === 3) { // Node.TEXT_NODE === 3
+            textNodes.push(root);
+            return textNodes;
+        }
         const walker = document.createTreeWalker(
-            range.commonAncestorContainer,
+            root,
             NodeFilter.SHOW_TEXT,
             null,
             false
@@ -443,8 +448,13 @@ function convertCase (caseType) {
 
     function getTextNodesInRange(range) {
         const textNodes = [];
+        const root = range.commonAncestorContainer;
+        if (root.nodeType === 3) { // Node.TEXT_NODE === 3
+            textNodes.push(root);
+            return textNodes;
+        }
         const walker = document.createTreeWalker(
-            range.commonAncestorContainer,
+            root,
             NodeFilter.SHOW_TEXT,
             null,
             false
@@ -582,8 +592,13 @@ function convertKeyboardLayoutInSelection (direction, selectedText) {
 
     function getTextNodesInRange(range) {
         const textNodes = [];
+        const root = range.commonAncestorContainer;
+        if (root.nodeType === 3) { // Node.TEXT_NODE === 3
+            textNodes.push(root);
+            return textNodes;
+        }
         const walker = document.createTreeWalker(
-            range.commonAncestorContainer,
+            root,
             NodeFilter.SHOW_TEXT,
             null,
             false
