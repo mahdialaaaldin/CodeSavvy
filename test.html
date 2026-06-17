@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSavvy Extension - Interactive Sandbox</title>
+    <link rel="icon" type="image/png" sizes="48x48" href="src/assets/icons/Icons/icon48.png">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Modern CSS Design System */
+        :root {
+            --bg-dark: #070a13;
+            --bg-card: rgba(15, 23, 42, 0.65);
+            --bg-card-hover: rgba(23, 37, 84, 0.35);
+            --border-glow: rgba(99, 102, 241, 0.15);
+            --border-normal: rgba(255, 255, 255, 0.08);
+
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --secondary: #10b981;
+            --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --warning: #f59e0b;
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --danger: #ef4444;
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+
+            --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.15);
+            --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, border-color 0.3s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-sm);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.6);
+        }
+
+        /* Top Notification Banner (Design Mode Detector) */
+        .banner {
+            background: var(--warning-gradient);
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Layout Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Dashboard Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-normal);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px 32px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
+            animation: logoPulse 3s infinite ease-in-out;
+        }
+
+        @keyframes logoPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
+            }
+
+            50% {
+                transform: scale(1.05) rotate(3deg);
+                filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.6));
+            }
+        }
+
+        .brand-title h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-title p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        /* Sandbox Dashboard Stats Widget */
+        .live-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-normal);
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-badge span:first-child {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-badge span:last-child {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        .stat-badge.active-mode {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Recording Instructions Alert */
+        .recording-tip {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px dashed rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-md);
+            padding: 16px 24px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .recording-tip-icon {
+            font-size: 1.5rem;
+            animation: pulseRecord 1.5s infinite;
+        }
+
+        @keyframes pulseRecord {
+
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .recording-tip-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .recording-tip-content strong {
+            color: var(--text-main);
+        }
+
+        /* 3-Column Layout Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glassmorphic Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-normal);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.25);
+            background: var(--bg-card-hover);
+            box-shadow: var(--shadow-glow), var(--shadow-card);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-normal);
+            padding-bottom: 16px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            font-size: 1.4rem;
+            background: rgba(255, 255, 255, 0.05);
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-normal);
+        }
+
+        .card-title h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        /* Section Category Titles */
+        .section-tag {
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            padding-bottom: 8px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Interactive Status Badges */
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-pill.danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-pill.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            animation: pulseGreen 2s infinite;
+        }
+
+        @keyframes pulseGreen {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 8px 2px rgba(16, 185, 129, 0.2);
+            }
+        }
+
+        /* Standard Input styling */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-normal);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Special States (For Testing Unlock Elements) */
+        input[disabled],
+        button[disabled] {
+            cursor: not-allowed;
+            background: rgba(255, 255, 255, 0.01) !important;
+            border-color: rgba(255, 255, 255, 0.04) !important;
+            color: var(--text-muted) !important;
+        }
+
+        .divDisabled {
+            opacity: 0.5;
+            pointer-events: none;
+            user-select: none;
+            background: rgba(239, 68, 68, 0.02);
+            border: 2px dashed rgba(239, 68, 68, 0.2);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Buttons styling */
+        .btn {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn:hover:not([disabled]) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn:active:not([disabled]) {
+            transform: translateY(1px);
+        }
+
+        /* Text Area Counters */
+        .counter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .counter-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        /* Design Mode Editable Elements Highlight */
+        body.design-mode-active [contenteditable],
+        body.design-mode-active p,
+        body.design-mode-active h2,
+        body.design-mode-active h3 {
+            outline: 1px dashed var(--warning) !important;
+            cursor: text;
+        }
+
+        /* Font Changing Preview Styles */
+        .font-demo-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-normal);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .font-demo-box p {
+            line-height: 1.5;
+        }
+
+        .font-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Context Menu Selection Zones */
+        .selection-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-normal);
+            border-radius: var(--radius-md);
+            padding: 20px 16px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            cursor: pointer;
+            user-select: text;
+            position: relative;
+            margin-top: 12px;
+        }
+
+        .selection-box:hover {
+            border-color: rgba(99, 102, 241, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .selection-label {
+            position: absolute;
+            top: -10px;
+            left: 12px;
+            background: #0d1222;
+            padding: 0 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--primary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-normal);
+        }
+
+        /* Log / History Section */
+        .history-log {
+            grid-column: 1 / -1;
+            background: rgba(10, 15, 30, 0.8);
+            border: 1px solid var(--border-normal);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-normal);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .history-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-console {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .log-entry {
+            display: flex;
+            gap: 12px;
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        .log-time {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .log-msg {
+            color: var(--text-main);
+        }
+
+        .log-msg.highlight-success {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        /* Mock Screen Layout for Screenshot feature */
+        .screenshot-mock {
+            border: 1px solid var(--border-normal);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.01);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 180px;
+            position: relative;
+        }
+
+        .screenshot-mock-header {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid var(--border-normal);
+        }
+
+        .mock-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .mock-dot.r {
+            background: var(--danger);
+        }
+
+        .mock-dot.y {
+            background: var(--warning);
+        }
+
+        .mock-dot.g {
+            background: var(--secondary);
+        }
+
+        .screenshot-mock-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .mock-visual {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            opacity: 0.15;
+            filter: blur(8px);
+            position: absolute;
+        }
+
+        /* Code highlight color definition */
+        .codesavvy-highlight {
+            background-color: #fef08a !important;
+            /* Tailwind yellow-200 equivalent */
+            color: #000000 !important;
+            border-radius: 2px;
+            padding: 1px 3px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Active Design Mode Warning Banner -->
+    <div id="design-mode-banner" class="banner">
+        <span>⚡ DESIGN MODE ACTIVE: You can click anywhere on the page and edit the text live!</span>
+    </div>
+
+    <div class="container">
+
+        <!-- Dashboard Header -->
+        <header>
+            <div class="header-left">
+                <img src="src/assets/icons/Icons/icon128.png" alt="CodeSavvy Logo" class="logo"
+                    onerror="this.src='https://img.icons8.com/color/96/000000/google-code.png';">
+                <div class="brand-title">
+                    <h1>CodeSavvy Extension Sandbox</h1>
+                    <p>The ultimate workbench to test, debug, and demonstrate your extension features in real-time.</p>
+                </div>
+            </div>
+
+            <!-- Dynamic State Trackers -->
+            <div class="live-stats">
+                <div class="stat-badge" id="stat-elements">
+                    <span>DOM Elements</span>
+                    <span style="color: var(--danger);" id="el-badge-status">🔴 LOCKED</span>
+                </div>
+                <div class="stat-badge" id="stat-passwords">
+                    <span>Passwords</span>
+                    <span style="color: var(--danger);" id="pw-badge-status">🔴 MASKED</span>
+                </div>
+                <div class="stat-badge" id="stat-design">
+                    <span>Design Mode</span>
+                    <span style="color: var(--text-secondary);" id="dm-badge-status">INACTIVE</span>
+                </div>
+                <div class="stat-badge" id="stat-font">
+                    <span>Current Font</span>
+                    <span style="color: var(--primary);" id="font-badge-status">Plus Jakarta</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Recording Tips alert box -->
+        <!-- <div class="recording-tip">
+            <div class="recording-tip-icon">🔴</div>
+            <div class="recording-tip-content">
+                <p><strong>Screen Recording Guide:</strong> Open the <strong>CodeSavvy extension popup</strong> from the toolbar to test page-manipulation tools (Unlock, Max Length, Password Reveal, Change Fonts, Design Mode). Right-click on any selected text inside the cards below to test <strong>AI features, case transformations, layout conversions, and highlighting</strong>!</p>
+            </div>
+        </div> -->
+
+        <div class="grid">
+
+            <!-- SECTION: DOM MANIPULATION -->
+            <div class="section-tag">
+                <span>🛠️</span> Core DOM Manipulation
+            </div>
+
+            <!-- Card: Unlock Elements -->
+            <div class="card" id="card-unlock">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">🔓</span>
+                        <div>
+                            <h2>Unlock Elements</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Remove disabled and readonly
+                                states</p>
+                        </div>
+                    </div>
+                    <span id="unlock-badge" class="status-pill danger">LOCKED</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Disabled Input Field</label>
+                    <input type="text" id="disabled-input" disabled value="This input field is currently disabled.">
+                </div>
+
+                <div class="input-group">
+                    <label>Readonly Input Field</label>
+                    <input type="text" id="readonly-input" readonly value="This input field is readonly.">
+                </div>
+
+                <div class="input-group">
+                    <label>Disabled Custom Container (divDisabled)</label>
+                    <div class="divDisabled" id="disabled-div">
+                        🚫 This custom content box is locked via CSS classes (.divDisabled).
+                    </div>
+                </div>
+
+                <button class="btn" id="disabled-btn" disabled>
+                    Disabled Action Button
+                </button>
+            </div>
+
+            <!-- Card: Max Length Limits -->
+            <div class="card" id="card-maxlength">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">✂️</span>
+                        <div>
+                            <h2>Remove Input Limits</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Unlock field characters
+                                boundaries</p>
+                        </div>
+                    </div>
+                    <span id="limit-badge" class="status-pill danger">MAX_LENGTH: 10</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="limit-input">Test Area (Restricted to 10 characters max)</label>
+                    <input type="text" id="limit-input" maxlength="10" placeholder="Type here...">
+                    <div class="counter-container">
+                        <span id="limit-note">Restricted by maxlength="10" attribute</span>
+                        <span class="counter-badge"><span id="char-count">0</span> / <span
+                                id="char-max">10</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Password Revealer -->
+            <div class="card" id="card-password">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">👁️</span>
+                        <div>
+                            <h2>Reveal Passwords</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Convert hidden text inputs
+                                dynamically</p>
+                        </div>
+                    </div>
+                    <span id="password-badge" class="status-pill danger">MASKED</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="password-input">Protected Password Field</label>
+                    <input type="password" id="password-input" value="codesavvy_is_awesome_2026">
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">
+                    When the password revealer runs, the extension shifts the type attribute of input fields from
+                    password to text.
+                </p>
+            </div>
+
+
+            <!-- SECTION: TYPOGRAPHY AND MODES -->
+            <div class="section-tag">
+                <span>🎨</span> Styling & Page Modes
+            </div>
+
+            <!-- Card: Font Changer -->
+            <div class="card" id="card-fonts">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">🔤</span>
+                        <div>
+                            <h2>Change Fonts</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Test global typeface
+                                modifications</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="font-demo-box" id="font-preview-box">
+                    <span class="font-tag">Typography Sandbox Zone</span>
+                    <h3 style="font-size: 1.3rem; font-weight: 700;">Headline Text Element</h3>
+                    <p style="font-size: 0.9rem;">
+                        This text box is designed to verify Google Fonts styling. When you apply fonts via the CodeSavvy
+                        popup, you will see this typography adapt instantly.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card: Design Mode -->
+            <div class="card" id="card-designmode">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">✏️</span>
+                        <div>
+                            <h2>Page Edit Mode</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Toggles document.designMode
+                                state</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selection-box" style="border-style: dashed;">
+                    <div class="selection-label">Interactive Edit Sandbox</div>
+                    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Try editing this heading directly!</h3>
+                    <p>
+                        Once Edit Mode is active (via the extension popup or the key combination
+                        <strong>Ctrl+Shift+Y</strong>), you can click directly on this paragraph and type/delete
+                        characters as if it were a word processor.
+                    </p>
+                </div>
+            </div>
+
+
+            <!-- SECTION: CONTEXT MENU AI & TRANSFORMATIONS -->
+            <div class="section-tag">
+                <span>🤖</span> Right-Click Selection Actions
+            </div>
+
+            <!-- Card: AI Enhancer -->
+            <div class="card" id="card-ai">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">✨</span>
+                        <div>
+                            <h2>Gemini AI Actions</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Select text, right-click,
+                                select AI enhancement</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- spelling/grammar -->
+                <div class="selection-box" title="Select this text & right click to use 'Improve Text'">
+                    <div class="selection-label">Test 1: Spelling & Grammar (Improve Text)</div>
+                    this extension are very good, it help me to debugs my webpages fastly.
+                </div>
+
+                <!-- professional enhancement -->
+                <div class="selection-box" title="Select this text & right click to use 'Enhance Professionally'">
+                    <div class="selection-label">Test 2: Professional Tone</div>
+                    yo i need this code done by tomorrow can u write me a function that fetches api data and handles
+                    errors thanks bro
+                </div>
+
+                <!-- roasted / humor mode -->
+                <div class="selection-box" title="Select this text & right click to use 'Roasted Mode'">
+                    <div class="selection-label">Test 3: Roasted Mode & Humor</div>
+                    I spent 6 hours debugging a typo in a CSS class name, and it turned out I spelled 'flex' as 'flxe'.
+                </div>
+
+                <!-- prompt engineer -->
+                <div class="selection-box" title="Select this text & right click to use 'Prompt Engineer'">
+                    <div class="selection-label">Test 4: Prompt Engineering</div>
+                    write a script in python that parses a CSV file and calculates the averages of the second column
+                </div>
+            </div>
+
+            <!-- Card: Case Transformation & Layout Conversions -->
+            <div class="card" id="card-transforms">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">🔀</span>
+                        <div>
+                            <h2>Transformations & Layouts</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Right-click to swap casing or
+                                fix layouts</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selection-box" title="Highlight this text to apply Case Transformations">
+                    <div class="selection-label">Case Transformations Playground</div>
+                    tHis IS a tESt SeNTeNCe foR CaSe CONveRSiON.
+                </div>
+
+                <div class="selection-box" title="Select 'sghl' and click 'Convert English to Arabic'">
+                    <div class="selection-label">Layout: English to Arabic layout (sghl -> سلام)</div>
+                    Type with wrong layout: <strong>sghl</strong>
+                </div>
+
+                <div class="selection-box" title="Select 'ي' and click 'Convert Arabic to English'">
+                    <div class="selection-label">Layout: Arabic to English layout (ي -> d)</div>
+                    Type with wrong layout: <strong>ي</strong>
+                </div>
+            </div>
+
+            <!-- Card: Text Highlighting & Utilities -->
+            <div class="card" id="card-highlighting">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">🖌️</span>
+                        <div>
+                            <h2>Highlighting & Utilities</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary);">Interactive highlighter and
+                                layout utilities</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selection-box" title="Select some words here and click 'Highlight Text'">
+                    <div class="selection-label">Highlighter Zone</div>
+                    Highlight any selection of text inside this sentence. Right-click, expand "Text Actions" and choose
+                    <strong>"Highlight Text"</strong>. It will immediately wrap your selected characters in a yellow
+                    highlight.
+                </div>
+
+                <div class="screenshot-mock">
+                    <div class="screenshot-mock-header">
+                        <div class="mock-dot r"></div>
+                        <div class="mock-dot y"></div>
+                        <div class="mock-dot g"></div>
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-muted); margin-left: 10px;">active_window_preview.png</span>
+                    </div>
+                    <div class="screenshot-mock-body">
+                        <div class="mock-visual"></div>
+                        <span>📷 CodeSavvy Screenshot Target</span>
+                        <p style="font-size: 0.7rem; text-align: center; max-width: 80%;">Use the screenshot button in
+                            the extension popup to capture this canvas.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Logging Console -->
+        <div class="history-log">
+            <div class="history-header">
+                <div class="history-title">
+                    <span style="color: var(--primary);">🖥️</span>
+                    <span>Activity & State Logger</span>
+                </div>
+                <button class="btn"
+                    style="padding: 6px 12px; font-size: 0.75rem; background: rgba(255, 255, 255, 0.05); box-shadow: none;"
+                    onclick="clearConsole()">
+                    Clear Log
+                </button>
+            </div>
+            <div class="history-console" id="console-output">
+                <div class="log-entry">
+                    <span class="log-time">[00:00:00]</span>
+                    <span class="log-msg">CodeSavvy extension testing sandbox initialized. Waiting for actions...</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Live Event/State Tracker Script -->
+    <script>
+        const consoleOutput = document.getElementById('console-output');
+
+        // Logger helper
+        function logAction(message, success = false) {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            if (success) {
+                logEntry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg highlight-success">${message}</span>`;
+            } else {
+                logEntry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg">${message}</span>`;
+            }
+            consoleOutput.appendChild(logEntry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+            logAction("Console cleared.");
+        }
+
+        // 1. Monitor Unlock Elements (disabled, readonly, aria-disabled, CSS classes)
+        const disabledInput = document.getElementById('disabled-input');
+        const readonlyInput = document.getElementById('readonly-input');
+        const disabledDiv = document.getElementById('disabled-div');
+        const disabledBtn = document.getElementById('disabled-btn');
+        const unlockBadge = document.getElementById('unlock-badge');
+        const elBadgeStatus = document.getElementById('el-badge-status');
+
+        let isUnlocked = false;
+
+        function checkUnlockState() {
+            const hasDisabledAttr = disabledInput.hasAttribute('disabled') || disabledBtn.hasAttribute('disabled');
+            const hasReadonlyAttr = readonlyInput.hasAttribute('readonly');
+            const hasDivClass = disabledDiv.classList.contains('divDisabled') || disabledDiv.classList.contains('disabled');
+
+            if (!hasDisabledAttr && !hasReadonlyAttr && !hasDivClass && !isUnlocked) {
+                isUnlocked = true;
+                unlockBadge.innerText = 'UNLOCKED';
+                unlockBadge.className = 'status-pill success';
+
+                elBadgeStatus.innerText = '🟢 UNLOCKED';
+                elBadgeStatus.style.color = 'var(--secondary)';
+
+                logAction("🎉 SUCCESS: Extension unlocked disabled, readonly, and locked class elements!", true);
+
+                // Add success visual feedback
+                document.getElementById('card-unlock').style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            } else if ((hasDisabledAttr || hasReadonlyAttr || hasDivClass) && isUnlocked) {
+                // Relocked (just in case they refresh or reload)
+                isUnlocked = false;
+                unlockBadge.innerText = 'LOCKED';
+                unlockBadge.className = 'status-pill danger';
+
+                elBadgeStatus.innerText = '🔴 LOCKED';
+                elBadgeStatus.style.color = 'var(--danger)';
+            }
+        }
+
+        // 2. Monitor Input Max Length Limits
+        const limitInput = document.getElementById('limit-input');
+        const charCount = document.getElementById('char-count');
+        const charMax = document.getElementById('char-max');
+        const limitBadge = document.getElementById('limit-badge');
+        const limitNote = document.getElementById('limit-note');
+        let isMaxLimitRemoved = false;
+
+        // Character counter update
+        limitInput.addEventListener('input', () => {
+            charCount.innerText = limitInput.value.length;
+        });
+
+        function checkMaxLimitState() {
+            const hasMaxLimit = limitInput.hasAttribute('maxlength');
+            if (!hasMaxLimit && !isMaxLimitRemoved) {
+                isMaxLimitRemoved = true;
+                limitBadge.innerText = 'UNLIMITED';
+                limitBadge.className = 'status-pill success';
+                charMax.innerText = '∞';
+                limitNote.innerText = 'Unlimited typing enabled (maxlength attribute removed)';
+                limitNote.style.color = 'var(--secondary)';
+
+                logAction("🎉 SUCCESS: Max length restriction removed from text field!", true);
+                document.getElementById('card-maxlength').style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            } else if (hasMaxLimit && isMaxLimitRemoved) {
+                isMaxLimitRemoved = false;
+                limitBadge.innerText = 'MAX_LENGTH: 10';
+                limitBadge.className = 'status-pill danger';
+                charMax.innerText = '10';
+                limitNote.innerText = 'Restricted by maxlength="10" attribute';
+                limitNote.style.color = 'var(--text-muted)';
+            }
+        }
+
+        // 3. Monitor Password Revealer
+        const passwordInput = document.getElementById('password-input');
+        const passwordBadge = document.getElementById('password-badge');
+        const pwBadgeStatus = document.getElementById('pw-badge-status');
+        let isPwRevealed = false;
+
+        function checkPasswordState() {
+            const currentType = passwordInput.getAttribute('type');
+            if (currentType === 'text' && !isPwRevealed) {
+                isPwRevealed = true;
+                passwordBadge.innerText = 'REVEALED';
+                passwordBadge.className = 'status-pill success';
+
+                pwBadgeStatus.innerText = '🟢 REVEALED';
+                pwBadgeStatus.style.color = 'var(--secondary)';
+
+                logAction("🎉 SUCCESS: Password revealed! Field changed to readable text.", true);
+                document.getElementById('card-password').style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            } else if (currentType === 'password' && isPwRevealed) {
+                isPwRevealed = false;
+                passwordBadge.innerText = 'MASKED';
+                passwordBadge.className = 'status-pill danger';
+
+                pwBadgeStatus.innerText = '🔴 MASKED';
+                pwBadgeStatus.style.color = 'var(--danger)';
+            }
+        }
+
+        // 4. Monitor Global Edit Mode (designMode)
+        const designBanner = document.getElementById('design-mode-banner');
+        const dmBadgeStatus = document.getElementById('dm-badge-status');
+        const designBadgeWidget = document.getElementById('stat-design');
+        let isDesignModeActive = false;
+
+        function checkDesignModeState() {
+            const active = document.designMode === 'on';
+            if (active && !isDesignModeActive) {
+                isDesignModeActive = true;
+                document.body.classList.add('design-mode-active');
+                designBanner.style.display = 'flex';
+
+                dmBadgeStatus.innerText = 'ACTIVE';
+                dmBadgeStatus.style.color = 'var(--warning)';
+                designBadgeWidget.classList.add('active-mode');
+
+                logAction("⚡ ALERT: Design Mode toggled ON. Text elements are now content-editable.", false);
+            } else if (!active && isDesignModeActive) {
+                isDesignModeActive = false;
+                document.body.classList.remove('design-mode-active');
+                designBanner.style.display = 'none';
+
+                dmBadgeStatus.innerText = 'INACTIVE';
+                dmBadgeStatus.style.color = 'var(--text-secondary)';
+                designBadgeWidget.classList.remove('active-mode');
+
+                logAction("⚡ ALERT: Design Mode toggled OFF.", false);
+            }
+        }
+
+        // 5. Monitor Custom Applied Font Family
+        const fontPreviewBox = document.getElementById('font-preview-box');
+        const fontBadgeStatus = document.getElementById('font-badge-status');
+        let lastAppliedFont = '';
+
+        function checkAppliedFont() {
+            // Read from inline styles applied by extension scripting
+            const computedStyle = window.getComputedStyle(fontPreviewBox);
+            const appliedFont = computedStyle.fontFamily;
+
+            // Clean font names (strip quotes)
+            const cleanFontName = appliedFont.replace(/['"]/g, '').split(',')[0];
+
+            if (cleanFontName !== lastAppliedFont && lastAppliedFont !== '') {
+                fontBadgeStatus.innerText = cleanFontName;
+                logAction(`🎨 STYLE: Font changed to "${cleanFontName}"!`, true);
+            }
+            lastAppliedFont = cleanFontName;
+        }
+
+        // Setup observer check loops (since chrome.scripting modifies attributes directly)
+        setInterval(() => {
+            checkUnlockState();
+            checkMaxLimitState();
+            checkPasswordState();
+            checkDesignModeState();
+            checkAppliedFont();
+        }, 400);
+
+        // Keep initial font baseline
+        window.addEventListener('load', () => {
+            const computedStyle = window.getComputedStyle(fontPreviewBox);
+            lastAppliedFont = computedStyle.fontFamily.replace(/['"]/g, '').split(',')[0];
+            fontBadgeStatus.innerText = lastAppliedFont;
+        });
+    </script>
+</body>
+
+</html>
