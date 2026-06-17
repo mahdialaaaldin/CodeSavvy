@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Load existing settings
-    chrome.storage.local.get([ 'geminiApiKey', 'showQuote', 'apiProvider' ], (result) => {
+    chrome.storage.local.get([ 'geminiApiKey', 'showQuote', 'apiProvider', 'enableNotifications' ], (result) => {
         document.getElementById('apiKey').value = result.geminiApiKey || '';
         document.getElementById('showQuote').checked = result.showQuote !== undefined ? result.showQuote : false;
+        document.getElementById('enableNotifications').checked = result.enableNotifications !== undefined ? result.enableNotifications : false;
         document.getElementById('apiProvider').value = result.apiProvider || 'gemini';
 
         toggleApiKeyField(result.apiProvider || 'gemini');
@@ -46,11 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('saveKey').addEventListener('click', () => {
         const apiKey = document.getElementById('apiKey').value.trim();
         const showQuote = document.getElementById('showQuote').checked;
+        const enableNotifications = document.getElementById('enableNotifications').checked;
         const apiProvider = document.getElementById('apiProvider').value;
 
         chrome.storage.local.set({
             geminiApiKey: apiKey,
             showQuote: showQuote,
+            enableNotifications: enableNotifications,
             apiProvider: apiProvider
         }, () => {
             alert('Settings saved!');

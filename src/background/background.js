@@ -342,7 +342,7 @@ async function handleTextEnhancement(tab, promptId, infoSelectionText) {
 
     } catch (error) {
         console.error("AI text enhancement failed:", error);
-        chrome.notifications.create({
+        showNotificationHelper({
             type: 'basic',
             iconUrl: '/src/assets/icons/Icons/icon48.png',
             title: 'CodeSavvy - Error',
@@ -707,14 +707,14 @@ chrome.commands.onCommand.addListener(async (command) => {
 // Handle notification messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'showNotification') {
-        chrome.notifications.create({
+        showNotificationHelper({
             type: 'basic',
             iconUrl: '/src/assets/icons/Icons/icon48.png',
             title: 'CodeSavvy',
             message: request.message
         });
     } else if (request.action === 'showFallbackNotification') {
-        chrome.notifications.create({
+        showNotificationHelper({
             type: 'basic',
             iconUrl: '/src/assets/icons/Icons/icon48.png',
             title: 'CodeSavvy - API Fallback',
@@ -722,3 +722,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
     }
 });
+
+// Helper function to create notifications if enabled in settings
+function showNotificationHelper(options) {
+    chrome.storage.local.get(['enableNotifications'], (result) => {
+        const enableNotifications = result.enableNotifications !== undefined ? result.enableNotifications : false;
+        if (enableNotifications) {
+            chrome.notifications.create(options);
+        }
+    });
+}
