@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CodeSavvy",
-  "version": "2.0",
+  "version": "2.0.1",
   "icons": {
     "16": "src/assets/icons/icon16.png",
     "48": "src/assets/icons/icon48.png",
