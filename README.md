@@ -110,8 +110,6 @@ This project is organized as follows:
 ```
 CodeSavvy/
 ├── manifest.json         # Extension configuration (Manifest V3)
-├── PRIVACY_POLICY.md     # Offline Markdown Privacy Policy
-├── privacy.html          # Public Privacy Policy webpage (GitHub Pages)
 ├── README.md             # Documentation (This file)
 └── src/                  # Source Code
     ├── assets/
@@ -136,7 +134,9 @@ We believe in strict user data privacy and data minimization.
 *   **Direct API Calls**: Your Gemini API Key is stored safely on your browser profile via `chrome.storage.local`. When utilizing AI features, selected text is sent directly to Google Gemini API endpoints without routing through any intermediary developer servers.
 *   **No Tracking**: We do not collect, store, or sell any of your personal details, browsing history, or website activities.
 
-For a detailed review of our privacy practices, read our [PRIVACY_POLICY.md](PRIVACY_POLICY.md) or visit our publicly hosted [Privacy Policy Page](privacy.html).
+For a detailed review of our privacy practices, read our [PRIVACY_POLICY.md](PRIVACY_POLICY.md) or visit our publicly hosted [Privacy Policy Page](https://mahdialaaaldin.github.io/codesavvy-docs/privacy.html). 
+
+For extension testing and demonstration, you can access the live [CodeSavvy Sandbox Hub](https://mahdialaaaldin.github.io/codesavvy-docs/index.html).
 
 ---
 
