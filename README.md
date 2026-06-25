@@ -1,6 +1,6 @@
 # **CodeSavvy Extension** <img src="src/assets/icons/icon48.png" width="32" height="32" align="center" alt="CodeSavvy logo">
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-v2.0-blue.svg?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/codesavvy/jenendhnlcnokliclhccikgeohdgfhml)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-v2.0.1-blue.svg?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/codesavvy/jenendhnlcnokliclhccikgeohdgfhml)
 [![Manifest Version](https://img.shields.io/badge/Manifest-V3-emerald.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License](https://img.shields.io/badge/License-All_Rights_Reserved-red.svg)](#license)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](#contributing)
